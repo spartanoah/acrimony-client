@@ -1,0 +1,11 @@
+/*
+ * Decompiled with CFR 0.153-SNAPSHOT (d6f6758-dirty).
+ */
+package org.java_websocket.interfaces;
+
+import javax.net.ssl.SSLEngine;
+
+public interface ISSLChannel {
+    public SSLEngine getSSLEngine();
+}
+

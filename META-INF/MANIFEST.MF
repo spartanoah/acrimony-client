@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.1
+Created-By: 14.3-b01-101 (Apple Inc.)
+Premain-Class: lombok.launch.Agent
+Agent-Class: lombok.launch.Agent
+Can-Redefine-Classes: true
+Main-Class: lombok.launch.Main
+Lombok-Version: 1.18.24
+Automatic-Module-Name: lombok
+

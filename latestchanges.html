@@ -1,0 +1,17 @@
+<ul>
+<li>PLATFORM: JDK18 support added. .</li>
+<li>PLATFORM: Using ecj and maven? There's now a command line option to integrate lombok into your build chain. .</li>
+<li>FEATURE: <code>@ToString</code> has an annotation parameter called <code>onlyExplicitlyIncluded</code>. There's now a config key <code>lombok.toString.onlyExplicitlyIncluded</code> to set this property as well. .</li>
+<li>FEATURE: Turning a field named <code>uShape</code> into a getter is tricky: <code>getUShape</code> or <code>getuShape</code>? The community is split on which style to use. Lombok does <code>getUShape</code>, but if you prefer the <code>getuShape</code> style, add to <code>lombok.config</code>: <code>lombok.accessors.capitalization = beanspec</code>.  Pull Request #2996. Thanks <strong>@YonathanSherwin</strong>!</li>
+<li>FEATURE: You can now use <code>@Accessors(makeFinal = true)</code> to make <code>final</code> getters, setters, and with-ers. .</li>
+<li>BUGFIX: Various save actions and refactor scripts in eclipse work better.    .</li>
+<li>BUGFIX: Eclipse projects using the jasperreports-plugin will now compile. .</li>
+<li>BUGFIX: inner classes in <code>@UtilityClass</code> classes were broken in JDK9+. .</li>
+<li>BUGFIX: Delomboking code with <code>@Builder.Default</code> in it would generate different code vs lombok itself. .</li>
+<li>BUGFIX: Combining <code>@NonNullByDefault</code> and <code>lombok.addNullAnnotations</code> would generate two <code>@Nullable</code> annotations and thus generate a compiler error. . Thanks <strong>@JohnPaulTaylorII</strong>!</li>
+<li>BUGFIX: Null analysis in eclipse was broken for incremental builds. .</li>
+<li>BUGFIX <code>VerifyError</code> would show up in the latest eclipse release when using various refactor scripts. .</li>
+<li>BUGFIX: The various <code>@Log</code> annotations can now be placed on inner enums and records. .</li>
+<li>SECURITY: A widely reported security issue with log4j2 (CVE-2021-44228) has absolutely no effect on either lombok itself nor does usage of lombok on its own, or even the usage of lombok's <code>@Log4j2</code>, cause any issues whatsoever: You have to ship your own log4j2 dependency in your app - update that to 2.17 or otherwise mitigate this issue (see the CVE page). To avoid unneccessary warnings from dependency checkers, our dep on log4j2, which is used solely for testing, isn't shipped by us, and cannot be exploited in any way, has been updated to 2.17.1.</li>
+<li>IMPROBABLE BREAKING CHANGE: Lombok now understands a few more annotations that imply "this field should not ever contain a null reference". Lombok will thus copy some of these new annotations e.g. to generated getters and the like.  Pull Request #2904</li>
+</ul>
