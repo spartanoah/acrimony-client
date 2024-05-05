@@ -4,6 +4,7 @@
 package net.minecraft.client.gui.inventory;
 
 import Acrimony.Acrimony;
+import Acrimony.module.impl.player.ChestStealer;
 import Acrimony.module.impl.visual.CustomGui;
 import Acrimony.util.animation.AnimationUtil;
 import com.google.common.collect.Sets;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -24,6 +26,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 public abstract class GuiContainer
 extends GuiScreen {
@@ -73,6 +76,10 @@ extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         ItemStack itemstack;
+        if (ChestStealer.silent.isEnabled() && Acrimony.instance.getModuleManager().getModule(ChestStealer.class).isEnabled() && this.mc.currentScreen instanceof GuiChest && !Mouse.isGrabbed()) {
+            this.drawString(this.fontRendererObj, "Stealing...", 250, this.ySize + 50, -1);
+            return;
+        }
         this.drawDefaultBackground();
         if (this.openTime == 0L) {
             this.openTime = System.currentTimeMillis();

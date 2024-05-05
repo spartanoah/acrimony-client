@@ -5,7 +5,8 @@ package Acrimony.command.impl;
 
 import Acrimony.Acrimony;
 import Acrimony.command.Command;
-import Acrimony.util.misc.LogUtil;
+import Acrimony.ui.notification.Notification;
+import Acrimony.ui.notification.NotificationType;
 
 public class Config
 extends Command {
@@ -22,15 +23,15 @@ extends Command {
                 case "load": {
                     boolean success = Acrimony.instance.getFileSystem().loadConfig(configName, false);
                     if (success) {
-                        LogUtil.addChatMessage("Loaded config " + configName);
+                        Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.WARNING, "Config announcement", "Loaded config " + configName + " in game.", 3000L));
                         break;
                     }
-                    LogUtil.addChatMessage("Config not found.");
+                    Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.WARNING, "Config announcement", "Config not found in FileSystem, Please make sure you type the correct config name in Chat.", 3000L));
                     break;
                 }
                 case "save": {
                     Acrimony.instance.getFileSystem().saveConfig(configName);
-                    LogUtil.addChatMessage("Saved config " + configName);
+                    Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.WARNING, "Config announcement", "Saved config as " + configName + " in game.", 3000L));
                 }
             }
         }

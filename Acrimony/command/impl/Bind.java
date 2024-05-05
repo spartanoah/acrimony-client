@@ -6,7 +6,8 @@ package Acrimony.command.impl;
 import Acrimony.Acrimony;
 import Acrimony.command.Command;
 import Acrimony.module.Module;
-import Acrimony.util.misc.LogUtil;
+import Acrimony.ui.notification.Notification;
+import Acrimony.ui.notification.NotificationType;
 import org.lwjgl.input.Keyboard;
 
 public class Bind
@@ -22,10 +23,10 @@ extends Command {
             if (module != null) {
                 String keyName = args[2].toUpperCase();
                 ((Module)module).setKey(Keyboard.getKeyIndex(keyName));
-                LogUtil.addChatMessage("Bound " + ((Module)module).getName() + " to " + keyName);
+                Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.WARNING, "KeyBind Manager", "Bound module : " + ((Module)module).getName() + " to " + keyName, 3000L));
             }
         } else {
-            LogUtil.addChatMessage("Usage : .bind module keybind");
+            Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.WARNING, "KeyBind Manager", "Usage : .bind module keybind", 3000L));
         }
     }
 }

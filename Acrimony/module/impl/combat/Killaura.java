@@ -20,9 +20,9 @@ import Acrimony.module.impl.combat.Teams;
 import Acrimony.module.impl.combat.Velocity;
 import Acrimony.module.impl.movement.Speed;
 import Acrimony.module.impl.player.Antivoid;
+import Acrimony.module.impl.player.Breaker;
+import Acrimony.module.impl.player.Scaffold;
 import Acrimony.module.impl.visual.ClientTheme;
-import Acrimony.module.impl.world.Breaker;
-import Acrimony.module.impl.world.Scaffold;
 import Acrimony.setting.impl.BooleanSetting;
 import Acrimony.setting.impl.DoubleSetting;
 import Acrimony.setting.impl.IntegerSetting;
@@ -141,6 +141,7 @@ extends Module {
             this.stopTargeting();
         }
         Acrimony.instance.getSlotSpoofHandler().stopSpoofing();
+        Acrimony.instance.getPacketBlinkHandler().stopBlinking();
     }
 
     private void stopTargeting() {
@@ -274,9 +275,16 @@ extends Module {
             this.attackCounter = 0;
         }
         if (shouldBlock) {
+            if (this.autoblockTicks % 7 != 0) {
+                Acrimony.instance.getPacketBlinkHandler().startBlinking();
+            } else {
+                Acrimony.instance.getPacketBlinkHandler().stopBlinking();
+            }
             this.afterAttackAutoblock(attackTick);
         } else {
             this.releaseBlocking();
+            Acrimony.instance.getPacketBlinkHandler().releasePackets();
+            this.autoblockTicks = 0;
         }
         Killaura.mc.gameSettings.keyBindAttack.pressed = false;
         if (!this.autoblock.is("None") && !this.autoblock.is("Blink")) {

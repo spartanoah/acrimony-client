@@ -38,6 +38,7 @@ extends Module {
     private final DoubleSetting radius = new DoubleSetting("Radius", 4.0, 2.0, 30.0, 2.0);
     private final DoubleSetting exposure = new DoubleSetting("Exposure", 2.2, 0.5, 10.0, 0.1);
     private final BooleanSetting seperate = new BooleanSetting("Seperate Texture", false);
+    private final BooleanSetting white = new BooleanSetting("Static White", true);
     private static ClientTheme theme;
     public static boolean renderNameTags;
     private final GlowESPShaderUtil outlineShader = new GlowESPShaderUtil("acrimony/shader/glowesp/outline.frag");
@@ -50,7 +51,7 @@ extends Module {
 
     public GlowESP() {
         super("GlowESP", Category.VISUAL);
-        this.addSettings(this.radius, this.exposure, this.seperate);
+        this.addSettings(this.radius, this.exposure, this.seperate, this.white);
     }
 
     @Override
@@ -168,7 +169,7 @@ extends Module {
     }
 
     private Color getColor() {
-        return new Color(theme.getColor(0));
+        return new Color(this.white.isEnabled() ? new Color(255, 255, 255).getRGB() : theme.getColor(0));
     }
 
     public void collectEntities() {

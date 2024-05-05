@@ -11,7 +11,7 @@ import Acrimony.event.impl.TickEvent;
 import Acrimony.module.Category;
 import Acrimony.module.Module;
 import Acrimony.module.impl.combat.Killaura;
-import Acrimony.module.impl.world.Scaffold;
+import Acrimony.module.impl.player.Scaffold;
 import Acrimony.setting.impl.BooleanSetting;
 import Acrimony.setting.impl.DoubleSetting;
 import Acrimony.setting.impl.ModeSetting;

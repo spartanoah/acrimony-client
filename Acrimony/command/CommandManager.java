@@ -10,7 +10,8 @@ import Acrimony.command.impl.Config;
 import Acrimony.command.impl.Toggle;
 import Acrimony.event.Listener;
 import Acrimony.event.impl.ChatSendEvent;
-import Acrimony.util.misc.LogUtil;
+import Acrimony.ui.notification.Notification;
+import Acrimony.ui.notification.NotificationType;
 import java.util.ArrayList;
 
 public class CommandManager {
@@ -41,7 +42,7 @@ public class CommandManager {
                 String[] commandParts = commandWithoutDot.split(" ");
                 ((Command)command).onCommand(commandParts);
             } else {
-                LogUtil.addChatMessage("Command not found.");
+                Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.ERROR, "Command", "Command not found.", 3000L));
             }
         }
     }

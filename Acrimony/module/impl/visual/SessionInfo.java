@@ -15,6 +15,7 @@ import Acrimony.module.impl.visual.ClientTheme;
 import Acrimony.module.impl.visual.NameProtect;
 import Acrimony.setting.impl.ModeSetting;
 import Acrimony.util.render.DrawUtil;
+import java.awt.Color;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.shader.Framebuffer;
@@ -25,7 +26,7 @@ import net.minecraft.network.play.server.S40PacketDisconnect;
 
 public class SessionInfo
 extends HUDModule {
-    private final ModeSetting mode = new ModeSetting("Mode", "Future", "Future", "Outline");
+    private final ModeSetting mode = new ModeSetting("Mode", "Future", "Future", "Outline", "Blur");
     private Framebuffer stencilFramebuffer = new Framebuffer(1, 1, false);
     private AcrimonyFont sfpro;
     private AcrimonyFont sfprobold;
@@ -158,6 +159,17 @@ extends HUDModule {
                 Gui.drawRect(x - 2, y, x, y + this.height + 2, ClientTheme.color1.getRGB());
                 Gui.drawRect(x + this.width, y, x + this.width + 2, y + this.height + 2, ClientTheme.color2.getRGB());
                 this.sfprobold.drawStringWithShadow("Session Stats", x + 48, y + 8, -1);
+                this.sfpro.drawStringWithShadow("Session Time: " + this.getSessionLengthString(), x + 8, y + 22, -1);
+                this.sfpro.drawStringWithShadow("Username: " + username, x + 8, y + 34, -1);
+                this.sfpro.drawStringWithShadow("Kills: " + this.killAmount, x + 8, y + 46, -1);
+                break;
+            }
+            case "Blur": {
+                Acrimony.instance.blurHandler.bloom(x, y, this.width, this.height, ClientTheme.blurradius.getValue(), new Color(0, 0, 0, 150));
+                for (float i = (float)x; i < (float)(x + this.width); i += 1.0f) {
+                    Gui.drawRect(i, y + 16, i + 1.0f, y + 17, this.theme.getColor((int)(i * 10.0f)));
+                }
+                this.sfprobold.drawStringWithShadow("Session Stats", x + 48, y + 6, -1);
                 this.sfpro.drawStringWithShadow("Session Time: " + this.getSessionLengthString(), x + 8, y + 22, -1);
                 this.sfpro.drawStringWithShadow("Username: " + username, x + 8, y + 34, -1);
                 this.sfpro.drawStringWithShadow("Kills: " + this.killAmount, x + 8, y + 46, -1);

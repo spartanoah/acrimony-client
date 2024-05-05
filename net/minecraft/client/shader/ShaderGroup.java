@@ -309,5 +309,13 @@ public class ShaderGroup {
     private Framebuffer getFramebuffer(String p_148017_1_) {
         return p_148017_1_ == null ? null : (p_148017_1_.equals("minecraft:main") ? this.mainFramebuffer : this.mapFramebuffers.get(p_148017_1_));
     }
+
+    public Framebuffer getMainFramebuffer() {
+        return this.mainFramebuffer;
+    }
+
+    public List<Shader> getListShaders() {
+        return this.listShaders;
+    }
 }
 

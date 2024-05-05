@@ -7,6 +7,7 @@ import Acrimony.Acrimony;
 import Acrimony.module.Module;
 import Acrimony.setting.AbstractSetting;
 import Acrimony.setting.impl.BooleanSetting;
+import Acrimony.setting.impl.ColorSetting;
 import Acrimony.setting.impl.DoubleSetting;
 import Acrimony.setting.impl.IntegerSetting;
 import Acrimony.setting.impl.ModeSetting;
@@ -55,6 +56,11 @@ public class FileSystem {
                     if (s instanceof ModeSetting) {
                         ModeSetting modeSetting = (ModeSetting)s;
                         toWrite.add("Setting:" + m.getName() + ":" + modeSetting.getName() + ":" + modeSetting.getMode());
+                        continue;
+                    }
+                    if (s instanceof ColorSetting) {
+                        ColorSetting colorSetting = (ColorSetting)s;
+                        toWrite.add("Setting:" + m.getName() + ":" + colorSetting.getName() + ":" + colorSetting.getMode());
                         continue;
                     }
                     if (s instanceof DoubleSetting) {
@@ -114,6 +120,11 @@ public class FileSystem {
                             if (setting instanceof ModeSetting) {
                                 ModeSetting modeSetting = (ModeSetting)setting;
                                 modeSetting.setMode(infos[3]);
+                                break;
+                            }
+                            if (setting instanceof ColorSetting) {
+                                ColorSetting colorSetting = (ColorSetting)setting;
+                                colorSetting.setMode(infos[3]);
                                 break;
                             }
                             if (setting instanceof DoubleSetting) {

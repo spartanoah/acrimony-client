@@ -14,12 +14,14 @@ import Acrimony.module.HUDModule;
 import Acrimony.module.Module;
 import Acrimony.module.impl.visual.ClientTheme;
 import Acrimony.setting.impl.BooleanSetting;
+import Acrimony.setting.impl.DoubleSetting;
 import Acrimony.setting.impl.EnumModeSetting;
 import Acrimony.setting.impl.ModeSetting;
 import Acrimony.util.animation.AnimationHolder;
 import Acrimony.util.animation.AnimationType;
 import Acrimony.util.network.ServerUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import net.minecraft.client.gui.Gui;
@@ -32,21 +34,39 @@ extends HUDModule {
     private final BooleanSetting showwater = new BooleanSetting("Client WaterMark", true);
     private final BooleanSetting showarray = new BooleanSetting("Client ArrayList", true);
     private final BooleanSetting infomation = new BooleanSetting("Game Infomation", true);
-    private final ModeSetting arraymode = new ModeSetting("Array Mode", () -> this.showarray.isEnabled(), "Simple", "Simple", "Outline");
-    private final ModeSetting watermode = new ModeSetting("Mark Mode", () -> this.showwater.isEnabled(), "New", "New", "Old");
+    public static final BooleanSetting notification = new BooleanSetting("Notification", true);
+    public static ModeSetting notificationmode = new ModeSetting("notification mode", () -> notification.isEnabled(), "Simple", "Simple", "Outline", "Blur", "Jello");
+    public static final BooleanSetting notificationsounds = new BooleanSetting("Toggle module Sound", () -> notification.isEnabled(), true);
+    private final ModeSetting arraymode = new ModeSetting("Array Mode", () -> this.showarray.isEnabled(), "Simple", "Simple", "Outline", "Blur", "Jello");
+    private final ModeSetting arrayfont = new ModeSetting("Array CFont", () -> this.showarray.isEnabled(), "SfPro", "SfPro", "SfBold", "Mc");
+    private final ModeSetting watermode = new ModeSetting("Mark Mode", () -> this.showwater.isEnabled(), "New", "New mark", "Old mark", "Blur mark", "Jello");
+    private final ModeSetting waterfont = new ModeSetting("Water CFont", () -> this.showwater.isEnabled(), "SfPro", "SfPro", "SfBold", "Mc");
     private final ModeSetting animation = new ModeSetting("Animation", () -> this.showarray.isEnabled(), "Bounce", "Bounce", "Slide");
+    private final ModeSetting blurmode = new ModeSetting("Color", () -> this.showarray.isEnabled() && this.arraymode.is("Blur"), "ClientTheme", "ClientTheme", "Black Static", "Custom Static");
     private final BooleanSetting suffix = new BooleanSetting("Tags", () -> this.showarray.isEnabled(), true);
     private final BooleanSetting important = new BooleanSetting("Only Important", () -> this.showarray.isEnabled(), false);
     private final EnumModeSetting<AlignType> alignMode = new EnumModeSetting("Align type", () -> this.showarray.isEnabled(), (Enum)AlignType.RIGHT, (Enum[])AlignType.values());
     private final BooleanSetting bps = new BooleanSetting("BPS", () -> this.infomation.isEnabled(), true);
     private final BooleanSetting balance = new BooleanSetting("Balance", () -> this.infomation.isEnabled(), true);
+    private final BooleanSetting infobg = new BooleanSetting("Blur Background", () -> this.infomation.isEnabled(), false);
+    private final DoubleSetting colorRedValue = new DoubleSetting("R", () -> this.showarray.isEnabled() && this.arraymode.is("Blur") && this.blurmode.is("Custom Static"), 255.0, 0.0, 255.0, 1.0);
+    private final DoubleSetting colorGreenValue = new DoubleSetting("G", () -> this.showarray.isEnabled() && this.arraymode.is("Blur") && this.blurmode.is("Custom Static"), 255.0, 0.0, 255.0, 1.0);
+    private final DoubleSetting colorBlueValue = new DoubleSetting("B", () -> this.showarray.isEnabled() && this.arraymode.is("Blur") && this.blurmode.is("Custom Static"), 255.0, 0.0, 255.0, 1.0);
     private AcrimonyFont sfpro;
+    private AcrimonyFont sfprobold;
     private AcrimonyFont sfproTitle;
+    private AcrimonyFont jellolight;
+    private AcrimonyFont jellomedium;
+    private AcrimonyFont jelloregular;
+    private AcrimonyFont jelloregularSubTitle;
+    private AcrimonyFont jelloregularTitle;
+    private AcrimonyFont jellosemibold;
+    private AcrimonyFont jellosemiboldTitle;
     private ClientTheme theme;
 
     public HUD() {
         super("HUD", Category.VISUAL, 5.0, 5.0, 100, 200, AlignType.RIGHT);
-        this.addSettings(this.showwater, this.watermode, this.showarray, this.arraymode, this.animation, this.suffix, this.important, this.alignMode, this.infomation, this.bps, this.balance);
+        this.addSettings(this.showwater, this.watermode, this.waterfont, this.showarray, this.arraymode, this.arrayfont, this.blurmode, this.colorRedValue, this.colorGreenValue, this.colorBlueValue, this.animation, this.suffix, this.important, this.alignMode, this.infomation, this.bps, this.balance, this.infobg, notification, notificationmode, notificationsounds);
         this.listenType = EventListenType.MANUAL;
         this.setStateHidden(true);
         this.startListening();
@@ -57,7 +77,15 @@ extends HUDModule {
     public void onClientStarted() {
         Acrimony.instance.getModuleManager().modules.forEach(m -> this.modules.add(new AnimationHolder<Module>((Module)m)));
         this.sfpro = Acrimony.instance.getFontManager().getSfpro();
+        this.sfprobold = Acrimony.instance.getFontManager().getSfprobold();
         this.sfproTitle = Acrimony.instance.getFontManager().getSfproTitle();
+        this.jellolight = Acrimony.instance.getFontManager().getJellolight();
+        this.jellomedium = Acrimony.instance.getFontManager().getJellomedium();
+        this.jelloregular = Acrimony.instance.getFontManager().getJelloregular();
+        this.jelloregularSubTitle = Acrimony.instance.getFontManager().getJelloregularSubTitle();
+        this.jelloregularTitle = Acrimony.instance.getFontManager().getJelloregularTitle();
+        this.jellosemibold = Acrimony.instance.getFontManager().getJellosemibold();
+        this.jellosemiboldTitle = Acrimony.instance.getFontManager().getJellosemiboldTitle();
         this.theme = Acrimony.instance.getModuleManager().getModule(ClientTheme.class);
     }
 
@@ -80,18 +108,34 @@ extends HUDModule {
                 }
                 case "Outline": {
                     this.renderOutline();
+                    break;
+                }
+                case "Blur": {
+                    this.renderBlurArray();
+                    break;
+                }
+                case "Jello": {
+                    this.renderJelloArray();
                 }
             }
             if (HUD.mc.gameSettings.showDebugInfo) {
                 return;
             }
             switch (this.watermode.getMode()) {
-                case "Old": {
-                    this.renderOld();
+                case "Old mark": {
+                    this.WaterrenderOld();
                     break;
                 }
-                case "New": {
-                    this.renderNew();
+                case "New mark": {
+                    this.WaterrenderNew();
+                    break;
+                }
+                case "Blur mark": {
+                    this.WaterrenderBlur();
+                    break;
+                }
+                case "Jello": {
+                    this.WaterrenderJello();
                 }
             }
             if (HUD.mc.gameSettings.showDebugInfo) {
@@ -99,6 +143,11 @@ extends HUDModule {
             }
             float x = 4.0f;
             float y = sr.getScaledHeight() - 13;
+            float fully = this.sfpro.fontHeight;
+            if (this.infobg.isEnabled()) {
+                double WIDTH = this.getStringWidth("Balance : --10000");
+                Acrimony.instance.blurHandler.bloom((int)x - 2, (int)((float)((int)y) - fully) + 12, (int)WIDTH, (int)fully - 2, ClientTheme.blurradius.getValue(), new Color(0, 0, 0, 150));
+            }
             if (this.balance.isEnabled()) {
                 this.sfpro.drawStringWithShadow("Balance : " + Acrimony.instance.getBalanceHandler().getBalanceInMS(), x, y, -1);
                 y -= 10.0f;
@@ -140,10 +189,10 @@ extends HUDModule {
         for (AnimationHolder<Module> holder : this.modules) {
             Module m = holder.get();
             String name = this.suffix.isEnabled() ? m.getDisplayName() : m.getName();
-            float startX = this.alignMode.getMode() == AlignType.LEFT ? x : (float)((double)sr.getScaledWidth() - this.getStringWidth(name) - (double)x);
+            float startX = this.alignMode.getMode() == AlignType.LEFT ? x : (float)((double)sr.getScaledWidth() - this.arraygetStringWidth(name) - (double)x);
             float startY = y;
             float finalLastStartX = lastStartX;
-            float endX = this.alignMode.getMode() == AlignType.LEFT ? (float)((double)x + this.getStringWidth(name)) : (float)sr.getScaledWidth() - x;
+            float endX = this.alignMode.getMode() == AlignType.LEFT ? (float)((double)x + this.arraygetStringWidth(name)) : (float)sr.getScaledWidth() - x;
             float endY = y + offsetY;
             if (Math.abs(endX - startX) > width) {
                 width = Math.abs(endX - startX);
@@ -153,7 +202,7 @@ extends HUDModule {
             holder.setAnimDuration(250L);
             holder.updateState(m.isEnabled());
             if (holder.isAnimDone() && !holder.isRendered()) continue;
-            holder.render(() -> this.drawStringWithShadow(name, startX, startY + 2.0f, this.getColor((int)(startY * -17.0f))), startX - 2.5f, startY, endX, endY);
+            holder.render(() -> this.arraydrawStringWithShadow(name, startX, startY + 2.0f, this.getColor((int)(startY * -17.0f))), startX - 2.5f, startY, endX, endY);
             y += offsetY * holder.getYMult();
             lastStartX = startX;
         }
@@ -177,10 +226,10 @@ extends HUDModule {
             holder.setAnimDuration(300L);
             holder.updateState(m.isEnabled());
             if (holder.isAnimDone() && !holder.isRendered()) continue;
-            float startX = this.alignMode.getMode() == AlignType.LEFT ? x : (float)((double)sr.getScaledWidth() - this.getStringWidth(name) - (double)x);
+            float startX = this.alignMode.getMode() == AlignType.LEFT ? x : (float)((double)sr.getScaledWidth() - this.arraygetStringWidth(name) - (double)x);
             float startY = y;
             float finalLastStartX = lastStartX;
-            float endX = this.alignMode.getMode() == AlignType.LEFT ? (float)((double)x + this.getStringWidth(name)) : (float)sr.getScaledWidth() - x;
+            float endX = this.alignMode.getMode() == AlignType.LEFT ? (float)((double)x + this.arraygetStringWidth(name)) : (float)sr.getScaledWidth() - x;
             float endY = y + offsetY;
             if (Math.abs(endX - startX) > width) {
                 width = Math.abs(endX - startX);
@@ -198,7 +247,7 @@ extends HUDModule {
             holder.render(() -> {
                 Gui.drawRect(startX - 2.0f, startY, endX + 2.0f, endY, 0x70000000);
                 Gui.drawRect(startX - 2.0f, startY, startX - 1.0f, endY, this.getColor((int)(startY * -17.0f)));
-                this.drawStringWithShadow(name, startX, startY + 2.0f, this.getColor((int)(startY * -17.0f)));
+                this.arraydrawStringWithShadow(name, startX, startY + 2.0f, this.getColor((int)(startY * -17.0f)));
             }, startX - 2.5f, startY, endX, endY);
             y += offsetY * holder.getYMult();
             lastStartX = startX;
@@ -210,11 +259,104 @@ extends HUDModule {
         this.height = (int)((double)y - this.posY.getValue()) + 1;
     }
 
-    private void renderNew() {
+    private void renderBlurArray() {
+        ScaledResolution sr = new ScaledResolution(mc);
+        float x = (float)this.posX.getValue();
+        float y = (float)this.posY.getValue();
+        float offsetY = 11.0f;
+        float lastStartX = 0.0f;
+        float lastEndX = 0.0f;
+        boolean firstModule = true;
+        float width = 0.0f;
+        for (AnimationHolder<Module> holder : this.modules) {
+            Module m = holder.get();
+            String name = this.suffix.isEnabled() ? m.getDisplayName() : m.getName();
+            float startX = this.alignMode.getMode() == AlignType.LEFT ? x : (float)((double)sr.getScaledWidth() - this.arraygetStringWidth(name) - (double)x);
+            float startY = y;
+            float finalLastStartX = lastStartX;
+            float endX = (float)this.arraygetStringWidth(name);
+            float endY = offsetY;
+            float AniX = this.alignMode.getMode() == AlignType.LEFT ? (float)((double)x + this.arraygetStringWidth(name)) : (float)sr.getScaledWidth() - x;
+            float AniY = y + offsetY;
+            if (Math.abs(endX - startX) > width) {
+                width = Math.abs(endX - startX);
+            }
+            if (this.important.isEnabled() && m.getCategory() == Category.VISUAL) continue;
+            holder.setAnimType(this.animation.is("Bounce") ? AnimationType.BOUNCE : AnimationType.SLIDE);
+            holder.setAnimDuration(350L);
+            holder.updateState(m.isEnabled());
+            if (holder.isAnimDone() && !holder.isRendered()) continue;
+            holder.render(() -> {
+                switch (this.blurmode.getMode()) {
+                    case "ClientTheme": {
+                        Acrimony.instance.blurHandler.bloom((int)(startX - 4.0f), (int)startY, (int)(endX + 8.0f), (int)endY, ClientTheme.blurradius.getValue(), this.getColor((int)(startY * -17.0f)));
+                        break;
+                    }
+                    case "Black Static": {
+                        Acrimony.instance.blurHandler.bloom((int)(startX - 4.0f), (int)startY, (int)(endX + 8.0f), (int)endY, ClientTheme.blurradius.getValue(), new Color(0, 0, 0, 10).getRGB());
+                        Gui.drawRect(startX - 2.0f, startY, AniX + 2.0f, AniY, new Color(0, 0, 0, 50).getRGB());
+                        break;
+                    }
+                    case "Custom Static": {
+                        Acrimony.instance.blurHandler.bloom((int)(startX - 4.0f), (int)startY, (int)(endX + 8.0f), (int)endY, ClientTheme.blurradius.getValue(), new Color((int)this.colorRedValue.getValue(), (int)this.colorGreenValue.getValue(), (int)this.colorBlueValue.getValue(), 150));
+                    }
+                }
+                this.arraydrawStringWithShadow(name, startX, startY + 2.0f, this.getColor((int)(startY * -17.0f)));
+            }, startX - 2.5f, startY, AniX, AniY);
+            y += offsetY * holder.getYMult();
+            lastStartX = startX;
+        }
+        this.width = (int)width + 1;
+        this.height = (int)((double)y - this.posY.getValue()) + 1;
+    }
+
+    private void renderJelloArray() {
+        ScaledResolution sr = new ScaledResolution(mc);
+        float x = (float)this.posX.getValue();
+        float y = (float)this.posY.getValue();
+        float offsetY = 11.0f;
+        float lastStartX = 0.0f;
+        float lastEndX = 0.0f;
+        boolean firstModule = true;
+        float width = 0.0f;
+        for (AnimationHolder<Module> holder : this.modules) {
+            Module m = holder.get();
+            String name = this.suffix.isEnabled() ? m.getDisplayName() : m.getName();
+            float startX = this.alignMode.getMode() == AlignType.LEFT ? x : (float)(sr.getScaledWidth() - this.jellolight.getStringWidth(name)) - x;
+            float startY = y;
+            float finalLastStartX = lastStartX;
+            float endX = this.alignMode.getMode() == AlignType.LEFT ? x + (float)this.jellolight.getStringWidth(name) : (float)sr.getScaledWidth() - x;
+            float endY = y + offsetY;
+            float blurxS = this.alignMode.getMode() == AlignType.LEFT ? x : (float)(sr.getScaledWidth() - this.jellolight.getStringWidth(name)) - x + 10.0f;
+            float bluryS = y + 2.0f;
+            float blurx = this.jellolight.getStringWidth(name) - 20;
+            float blury = offsetY - 4.0f;
+            if (Math.abs(endX - startX) > width) {
+                width = Math.abs(endX - startX);
+            }
+            if (this.important.isEnabled() && m.getCategory() == Category.VISUAL) continue;
+            holder.setAnimType(AnimationType.SLIDE);
+            holder.setAnimDuration(250L);
+            holder.updateState(m.isEnabled());
+            if (holder.isAnimDone() && !holder.isRendered()) continue;
+            holder.render(() -> {
+                Acrimony.instance.blurHandler.bloom((int)(blurxS - 4.0f), (int)bluryS, (int)(blurx + 8.0f), (int)blury, 50, new Color(0, 0, 0, 255).getRGB());
+                this.jellolight.drawString(name, startX, startY + 2.0f, new Color(255, 255, 255, 250).getRGB());
+                this.jellolight.drawString(name, startX, startY + 2.0f, new Color(255, 255, 255, 150).getRGB());
+                this.jellolight.drawString(name, startX, startY + 2.0f, new Color(255, 255, 255, 50).getRGB());
+            }, startX - 2.5f, startY, endX, endY);
+            y += offsetY * holder.getYMult();
+            lastStartX = startX;
+        }
+        this.width = (int)width + 1;
+        this.height = (int)((double)y - this.posY.getValue()) + 1;
+    }
+
+    private void WaterrenderNew() {
         String clientName = Acrimony.instance.name;
         String formattedClientName = String.valueOf(clientName.charAt(0)) + (Object)((Object)ChatFormatting.WHITE) + clientName.substring(1, clientName.length());
         String watermark = formattedClientName + " " + Acrimony.instance.version;
-        double watermarkWidth = this.getStringWidth(watermark);
+        double watermarkWidth = this.watergetStringWidth(watermark);
         float x = (float)this.posX.getValue();
         float y = (float)this.posY.getValue();
         this.sfproTitle.drawStringWithShadow(watermark, x + 1.0f, y + 1.0f, this.theme.getColor(0));
@@ -222,11 +364,11 @@ extends HUDModule {
         this.height = 15;
     }
 
-    private void renderOld() {
+    private void WaterrenderOld() {
         String clientName = Acrimony.instance.name;
         String formattedClientName = String.valueOf(clientName.charAt(0)) + (Object)((Object)ChatFormatting.WHITE) + clientName.substring(1, clientName.length());
         String watermark = formattedClientName + " " + Acrimony.instance.version + " | " + mc.getDebugFPS() + "FPS | " + ServerUtil.getCurrentServer();
-        double watermarkWidth = this.getStringWidth(watermark);
+        double watermarkWidth = this.watergetStringWidth(watermark);
         float x = (float)this.posX.getValue();
         float y = (float)this.posY.getValue();
         Gui.drawRect(x + 2.0f, y + 2.0f, x + (float)((int)watermarkWidth) + 8.0f, y + 20.0f, Integer.MIN_VALUE);
@@ -235,68 +377,131 @@ extends HUDModule {
             Gui.drawRect(i + 2.0f, y + 2.0f, i + 7.0f, y + 3.0f, this.theme.getColor((int)(i * 10.0f)));
             i += 1.0f;
         }
-        this.drawStringWithShadow(watermark, x + 5.0f, y + 8.0f, this.theme.getColor(0));
+        this.waterdrawStringWithShadow(watermark, x + 5.0f, y + 8.0f, this.theme.getColor(0));
         this.width = (int)(watermarkWidth + 3.0);
         this.height = 15;
     }
 
-    public void drawString(String text, float x, float y, int color) {
-        switch (this.arraymode.getMode()) {
-            case "Simple": {
+    private void WaterrenderBlur() {
+        String clientName = Acrimony.instance.name;
+        String formattedClientName = String.valueOf(clientName.charAt(0)) + (Object)((Object)ChatFormatting.WHITE) + clientName.substring(1, clientName.length());
+        String watermark = formattedClientName + " " + Acrimony.instance.version + " | " + mc.getDebugFPS() + "FPS | " + ServerUtil.getCurrentServer();
+        double watermarkWidth = this.watergetStringWidth(watermark);
+        float x = (float)this.posX.getValue();
+        float y = (float)this.posY.getValue();
+        Acrimony.instance.blurHandler.bloom((int)x, (int)(y + 2.0f), (int)(watermarkWidth + 10.0), 20, ClientTheme.blurradius.getValue(), new Color(0, 0, 0, 150));
+        this.waterdrawStringWithShadow(watermark, x + 5.0f, y + 8.0f, this.theme.getColor(0));
+        this.width = (int)(watermarkWidth + 3.0);
+        this.height = 15;
+    }
+
+    private void WaterrenderJello() {
+        float x = (float)this.posX.getValue();
+        float y = (float)this.posY.getValue();
+        this.jelloregularTitle.drawString("Sigma", x, y, new Color(255, 255, 255, 180).getRGB());
+        this.jelloregularSubTitle.drawString("Jello", x, y + 26.0f, new Color(255, 255, 255, 180).getRGB());
+    }
+
+    public void arraydrawString(String text, float x, float y, int color) {
+        switch (this.arrayfont.getMode()) {
+            case "SfPro": {
                 this.sfpro.drawStringWithShadow(text, x, y, color);
                 return;
             }
-            case "Outline": {
-                this.sfpro.drawString(text, x, y, color);
+            case "SfBold": {
+                this.sfprobold.drawStringWithShadow(text, x, y, color);
+                return;
+            }
+            case "Mc": {
+                HUD.mc.fontRendererObj.drawString(text, x, y, color);
                 return;
             }
         }
         HUD.mc.fontRendererObj.drawString(text, x, y, color);
     }
 
-    public void drawStringWithShadow(String text, float x, float y, int color) {
-        switch (this.arraymode.getMode()) {
-            case "Simple": {
+    public void arraydrawStringWithShadow(String text, float x, float y, int color) {
+        switch (this.arrayfont.getMode()) {
+            case "SfPro": {
                 this.sfpro.drawStringWithShadow(text, x, y, color);
                 break;
             }
-            case "Outline": {
-                this.sfpro.drawStringWithShadow(text, x, y, color);
+            case "SfBold": {
+                this.sfprobold.drawStringWithShadow(text, x, y, color);
+                break;
             }
-        }
-        if (this.watermode.is("Old")) {
-            this.sfpro.drawStringWithShadow(text, x, y, color);
+            case "Mc": {
+                HUD.mc.fontRendererObj.drawStringWithShadow(text, x, y, color);
+            }
         }
     }
 
-    public double getStringWidth(String s) {
-        switch (this.arraymode.getMode()) {
-            case "Simple": {
-                return this.sfpro.getStringWidth(s);
+    public void waterdrawString(String text, float x, float y, int color) {
+        switch (this.waterfont.getMode()) {
+            case "SfPro": {
+                this.sfpro.drawStringWithShadow(text, x, y, color);
+                return;
             }
-            case "Outline": {
-                return this.sfpro.getStringWidth(s);
+            case "SfBold": {
+                this.sfprobold.drawStringWithShadow(text, x, y, color);
+                return;
+            }
+            case "Mc": {
+                HUD.mc.fontRendererObj.drawString(text, x, y, color);
+                return;
             }
         }
-        switch (this.watermode.getMode()) {
-            case "New": 
-            case "Old": {
+        HUD.mc.fontRendererObj.drawString(text, x, y, color);
+    }
+
+    public void waterdrawStringWithShadow(String text, float x, float y, int color) {
+        switch (this.waterfont.getMode()) {
+            case "SfPro": {
+                this.sfpro.drawStringWithShadow(text, x, y, color);
+                break;
+            }
+            case "SfBold": {
+                this.sfprobold.drawStringWithShadow(text, x, y, color);
+                break;
+            }
+            case "Mc": {
+                HUD.mc.fontRendererObj.drawStringWithShadow(text, x, y, color);
+            }
+        }
+    }
+
+    public double arraygetStringWidth(String s) {
+        switch (this.arrayfont.getMode()) {
+            case "SfPro": {
                 return this.sfpro.getStringWidth(s);
+            }
+            case "SfBold": {
+                return this.sfprobold.getStringWidth(s);
+            }
+            case "Mc": {
+                return HUD.mc.fontRendererObj.getStringWidth(s);
             }
         }
         return HUD.mc.fontRendererObj.getStringWidth(s);
     }
 
-    public int getFontHeight() {
-        switch (this.arraymode.getMode()) {
-            case "Simple": {
-                return this.sfpro.getHeight();
+    public double watergetStringWidth(String s) {
+        switch (this.waterfont.getMode()) {
+            case "SfPro": {
+                return this.sfpro.getStringWidth(s);
             }
-            case "Outline": {
-                return this.sfpro.getHeight();
+            case "SfBold": {
+                return this.sfprobold.getStringWidth(s);
+            }
+            case "Mc": {
+                return HUD.mc.fontRendererObj.getStringWidth(s);
             }
         }
-        return HUD.mc.fontRendererObj.FONT_HEIGHT;
+        return HUD.mc.fontRendererObj.getStringWidth(s);
+    }
+
+    public double getStringWidth(String s) {
+        return this.sfpro.getStringWidth(s);
     }
 
     public int getColor(int offset) {

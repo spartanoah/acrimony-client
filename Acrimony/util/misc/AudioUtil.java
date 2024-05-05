@@ -12,5 +12,13 @@ implements IMinecraft {
     public static void buttonClick() {
         mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0f));
     }
+
+    public static void enable() {
+        mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.sigmao"), 1.0f));
+    }
+
+    public static void disable() {
+        mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.sigmad"), 1.0f));
+    }
 }
 

@@ -6,10 +6,12 @@ package Acrimony.module;
 import Acrimony.Acrimony;
 import Acrimony.module.Category;
 import Acrimony.module.EventListenType;
+import Acrimony.module.impl.visual.HUD;
 import Acrimony.setting.AbstractSetting;
 import Acrimony.ui.notification.Notification;
 import Acrimony.ui.notification.NotificationType;
 import Acrimony.util.IMinecraft;
+import Acrimony.util.misc.AudioUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,11 +79,17 @@ implements IMinecraft {
             this.onEnable();
             if (this.listenType == EventListenType.AUTOMATIC) {
                 Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.INFO, "Enable", "Module : " + this.getName(), 1000L));
+                if (HUD.notificationsounds.isEnabled()) {
+                    AudioUtil.enable();
+                }
                 this.startListening();
             }
         } else {
             if (this.listenType == EventListenType.AUTOMATIC) {
                 Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.ERROR, "Disable", "Module : " + this.getName(), 1000L));
+                if (HUD.notificationsounds.isEnabled()) {
+                    AudioUtil.disable();
+                }
                 this.stopListening();
             }
             this.onDisable();

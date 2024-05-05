@@ -46,8 +46,8 @@ extends GuiScreen {
         this.changelogs.clear();
         int initHeight = this.height / 4 + 48;
         int initWidth = this.width / 2 - 51;
-        this.changelogs.add(new Changelog(new String[]{"Added changelog", "Added a new main menu design", "Added damageparticles", "Added projectiles", "Added blur", "Added custom compresion & radius blur", "Added shader on main menu", "Added jesus", "Added fast eat", "Added killaura strafe mode (silent, none, strict)", "Added new full watchdog sprint scaffold", "Added session info (draggable)", "Added ncp/watchdog step"}, ChangelogType.ADD));
-        this.changelogs.add(new Changelog(new String[]{"Fixed shaders crashing", "Fixed Scaffold pitch", "Fixed killaura rotations", "Fixed rainbow color"}, ChangelogType.FIXED));
+        this.changelogs.add(new Changelog(new String[]{"Added New Blur", "Added custom compresion & radius blur", "Added shader on main menu", "Added Capes With Lots of Modes", "More Color Themes to choose from", "Added Sigma HUD", "Added Sigma Arraylist", "And more!"}, ChangelogType.ADD));
+        this.changelogs.add(new Changelog(new String[]{"Fixed shaders crashing", "Cookie Login opens on a different tab (causing confusion)", "Unpatched Watchdog Autoblock"}, ChangelogType.FIXED));
         this.changelogs.add(new Changelog(new String[]{"Removed chat font in better visuals", "Removed spotify", "Removed remove chat background", "Removed vulcan glide fly", "Removed discord rpc"}, ChangelogType.REMOVE));
         this.buttonList.add(new GuiButton(0, initWidth - 40, initHeight + 20, "Singleplayer"));
         this.buttonList.add(new GuiButton(1, initWidth - 40, initHeight + 42, "Multiplayer"));
@@ -128,7 +128,7 @@ extends GuiScreen {
         }
         reguler.drawStringWithShadow("Developed with " + (Object)((Object)ChatFormatting.RED) + "<3" + (Object)((Object)ChatFormatting.RESET) + " by kitxk1 & sophia_yu", (double)(this.width - reguler.getStringWidth("Developed with " + (Object)((Object)ChatFormatting.RED) + "<3" + (Object)((Object)ChatFormatting.RESET) + " by kitxk1 & sophia_yu") - 13), (double)(this.height - 15), -1);
         reguler.drawStringWithShadow(Acrimony.instance.name + " Client [#" + Acrimony.instance.version + "]", (double)((float)(this.width - reguler.getStringWidth(Acrimony.instance.name + " Client [#" + Acrimony.instance.version + "]")) / 110.0f), (double)(this.height - 15), -1);
-        DrawUtil.drawImage(new ResourceLocation("minecraft", "acrimony/Logo.png"), sr.getScaledWidth() / 2 - 70, this.height / 4 - 55, 160, 160);
+        DrawUtil.drawImage(new ResourceLocation("minecraft", "acrimony/logo.png"), sr.getScaledWidth() / 2 - 70, this.height / 4 - 55, 160, 160);
     }
 }
 

@@ -6,7 +6,8 @@ package Acrimony.command.impl;
 import Acrimony.Acrimony;
 import Acrimony.command.Command;
 import Acrimony.module.Module;
-import Acrimony.util.misc.LogUtil;
+import Acrimony.ui.notification.Notification;
+import Acrimony.ui.notification.NotificationType;
 
 public class Toggle
 extends Command {
@@ -20,10 +21,10 @@ extends Command {
             Object module = Acrimony.instance.getModuleManager().getModuleByNameNoSpace(args[1]);
             if (module != null) {
                 ((Module)module).toggle();
-                LogUtil.addChatMessage((((Module)module).isEnabled() ? "Enabled " : "Disabled ") + ((Module)module).getName());
+                Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.WARNING, "Toggle Module", (((Module)module).isEnabled() ? "Enabled " : "Disabled ") + ((Module)module).getName(), 3000L));
             }
         } else {
-            LogUtil.addChatMessage("Usage : .t/toggle modulename");
+            Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.WARNING, "Toggle Module", "Usage : .t/toggle modulename", 3000L));
         }
     }
 }

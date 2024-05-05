@@ -7,10 +7,10 @@ public enum Category {
     COMBAT,
     MOVEMENT,
     PLAYER,
-    WORLD,
     VISUAL,
     MISC,
-    GHOST;
+    GHOST,
+    SCRIPTS;
 
 }
 

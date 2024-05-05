@@ -30,6 +30,7 @@ extends Module {
     private final IntegerSetting vertical = new IntegerSetting("Vertical", () -> this.mode.is("Edit") || this.mode.is("Delayed"), 0, 0, 100, 2);
     private final IntegerSetting delay = new IntegerSetting("Delay", () -> this.mode.is("Delayed") || this.mode.is("Strafe") || this.mode.is("Ground collision"), 1, 0, 5, 1);
     private final BooleanSetting always = new BooleanSetting("Always", () -> this.mode.is("Legit"), false);
+    private final BooleanSetting dmgBoost = new BooleanSetting("Dmg Boost", () -> this.mode.is("Hypixel"), true);
     private final IntegerSetting distance = new IntegerSetting("Distance", () -> this.mode.is("Block collide"), 2, 1, 1, 3);
     private final BooleanSetting onlyServerSide = new BooleanSetting("Only server-side", () -> this.mode.is("Spoof offground"), true);
     private final DoubleSetting ySpoof = new DoubleSetting("Y spoof", () -> this.mode.is("Spoof offground"), 0.07, 0.0, 0.42, 0.01);
@@ -44,7 +45,7 @@ extends Module {
 
     public Velocity() {
         super("Velocity", Category.COMBAT);
-        this.addSettings(this.mode, this.horizontal, this.vertical, this.delay, this.always, this.distance, this.onlyServerSide, this.ySpoof, this.spoofForTwoTicks, this.roundPosition);
+        this.addSettings(this.mode, this.horizontal, this.vertical, this.delay, this.always, this.distance, this.onlyServerSide, this.ySpoof, this.spoofForTwoTicks, this.roundPosition, this.dmgBoost);
     }
 
     @Override
@@ -211,7 +212,7 @@ extends Module {
             case "Hypixel": {
                 if (this.ticks <= 0) break;
                 --this.ticks;
-                if (this.ticks != 0) break;
+                if (this.ticks != 0 || !this.dmgBoost.isEnabled()) break;
                 MovementUtil.strafe(event);
                 break;
             }

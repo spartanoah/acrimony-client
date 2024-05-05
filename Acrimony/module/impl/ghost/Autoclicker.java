@@ -11,6 +11,7 @@ import Acrimony.module.Module;
 import Acrimony.setting.impl.IntegerSetting;
 import Acrimony.util.misc.TimerUtil;
 import java.util.concurrent.ThreadLocalRandom;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.input.Mouse;
@@ -50,7 +51,7 @@ extends Module {
 
     @Listener
     public void onTick(TickEvent event) {
-        if (Mouse.isButtonDown(0) && !Mouse.isButtonDown(1)) {
+        if (Mouse.isButtonDown(0) && !Mouse.isButtonDown(1) && !Autoclicker.mc.thePlayer.isUsingItem() && !(Autoclicker.mc.currentScreen instanceof GuiInventory)) {
             if (this.wasHoldingMouse && this.clickingTick) {
                 Autoclicker.mc.leftClickCounter = 0;
                 mc.clickMouse();

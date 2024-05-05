@@ -10,8 +10,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import net.minecraft.client.Minecraft;
 
 public class FileUtil {
+    public static final File HOME = new File(Minecraft.getMinecraft().mcDataDir, "Acrimony");
+    public static final File CONFIGS = new File(HOME, "configs");
+
     public static String readFile(File file) {
         StringBuilder stringBuilder = new StringBuilder();
         try {

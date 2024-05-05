@@ -17,6 +17,13 @@ public class FontManager {
     private AcrimonyFont sfprobold;
     private AcrimonyFont sfprobold22;
     private AcrimonyFont icon;
+    private AcrimonyFont jellolight;
+    private AcrimonyFont jellomedium;
+    private AcrimonyFont jellosemibold;
+    private AcrimonyFont jellosemiboldTitle;
+    private AcrimonyFont jelloregularTitle;
+    private AcrimonyFont jelloregularSubTitle;
+    private AcrimonyFont jelloregular;
 
     public FontManager() {
         this.sfpro23 = new AcrimonyFont(this.getFontFromTTF("sfpro", 23.0f, 0), true, true);
@@ -24,6 +31,13 @@ public class FontManager {
         this.sfprobold = new AcrimonyFont(this.getFontFromTTF("sfprobold", 20.0f, 0), true, true);
         this.sfprobold22 = new AcrimonyFont(this.getFontFromTTF("sfprobold", 22.0f, 0), true, true);
         this.icon = new AcrimonyFont(this.getFontFromTTF("icon", 36.0f, 0), true, true);
+        this.jellolight = new AcrimonyFont(this.getFontFromTTF("Urbanist-Light", 20.0f, 0), true, true);
+        this.jellomedium = new AcrimonyFont(this.getFontFromTTF("Urbanist-Medium", 20.0f, 0), true, true);
+        this.jelloregular = new AcrimonyFont(this.getFontFromTTF("Urbanist-Regular", 20.0f, 0), true, true);
+        this.jelloregularSubTitle = new AcrimonyFont(this.getFontFromTTF("Urbanist-Regular", 26.0f, 0), true, true);
+        this.jelloregularTitle = new AcrimonyFont(this.getFontFromTTF("Urbanist-Regular", 52.0f, 0), true, true);
+        this.jellosemibold = new AcrimonyFont(this.getFontFromTTF("Urbanist-SemiBold", 20.0f, 0), true, true);
+        this.jellosemiboldTitle = new AcrimonyFont(this.getFontFromTTF("Urbanist-SemiBold", 50.0f, 0), true, true);
     }
 
     public Font getFontFromTTF(String fontName, float fontSize, int fontType) {
@@ -68,6 +82,34 @@ public class FontManager {
 
     public AcrimonyFont getIcon() {
         return this.icon;
+    }
+
+    public AcrimonyFont getJellolight() {
+        return this.jellolight;
+    }
+
+    public AcrimonyFont getJellomedium() {
+        return this.jellomedium;
+    }
+
+    public AcrimonyFont getJellosemibold() {
+        return this.jellosemibold;
+    }
+
+    public AcrimonyFont getJellosemiboldTitle() {
+        return this.jellosemiboldTitle;
+    }
+
+    public AcrimonyFont getJelloregularTitle() {
+        return this.jelloregularTitle;
+    }
+
+    public AcrimonyFont getJelloregularSubTitle() {
+        return this.jelloregularSubTitle;
+    }
+
+    public AcrimonyFont getJelloregular() {
+        return this.jelloregular;
     }
 }
 

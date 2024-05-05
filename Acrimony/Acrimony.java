@@ -8,6 +8,7 @@ import Acrimony.event.EventManager;
 import Acrimony.filesystem.FileSystem;
 import Acrimony.font.FontManager;
 import Acrimony.handler.client.BalanceHandler;
+import Acrimony.handler.client.BlurHandler;
 import Acrimony.handler.client.CameraHandler;
 import Acrimony.handler.client.KeybindHandler;
 import Acrimony.handler.client.SlotSpoofHandler;
@@ -44,6 +45,7 @@ implements IMinecraft {
     private SlotSpoofHandler slotSpoofHandler;
     private FileSystem fileSystem;
     private FontManager fontManager;
+    public BlurHandler blurHandler;
     private boolean destructed;
 
     public void start() throws IOException {
@@ -60,6 +62,7 @@ implements IMinecraft {
         this.cameraHandler = new CameraHandler();
         this.fileSystem = new FileSystem();
         this.fontManager = new FontManager();
+        this.blurHandler = new BlurHandler(true);
         this.fileSystem.loadDefaultConfig();
         this.fileSystem.loadKeybinds();
         this.moduleManager.modules.forEach(m -> m.onClientStarted());
@@ -142,6 +145,10 @@ implements IMinecraft {
 
     public FontManager getFontManager() {
         return this.fontManager;
+    }
+
+    public BlurHandler getBlurHandler() {
+        return this.blurHandler;
     }
 
     public boolean isDestructed() {

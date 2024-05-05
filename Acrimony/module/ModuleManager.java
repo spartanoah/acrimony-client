@@ -31,9 +31,11 @@ import Acrimony.module.impl.movement.Sprint;
 import Acrimony.module.impl.movement.Turnback;
 import Acrimony.module.impl.player.Antivoid;
 import Acrimony.module.impl.player.AutoTool;
+import Acrimony.module.impl.player.Breaker;
 import Acrimony.module.impl.player.ChestStealer;
 import Acrimony.module.impl.player.InventoryManager;
 import Acrimony.module.impl.player.Nofall;
+import Acrimony.module.impl.player.Scaffold;
 import Acrimony.module.impl.player.Timer;
 import Acrimony.module.impl.visual.Animations;
 import Acrimony.module.impl.visual.Cape;
@@ -52,15 +54,13 @@ import Acrimony.module.impl.visual.SessionInfo;
 import Acrimony.module.impl.visual.TargetHUD;
 import Acrimony.module.impl.visual.TimeChanger;
 import Acrimony.module.impl.visual.Xray;
-import Acrimony.module.impl.world.Breaker;
-import Acrimony.module.impl.world.Scaffold;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ModuleManager {
-    public final List<Module> modules = new ArrayList<Module>();
+    public List<Module> modules = new ArrayList<Module>();
     public List<HUDModule> hudModules;
 
     public ModuleManager() {
@@ -122,6 +122,10 @@ public class ModuleManager {
             return (T)module.get();
         }
         return null;
+    }
+
+    public void addModules(List<Module> modules) {
+        this.modules = modules;
     }
 
     public <T extends Module> T getModuleByName(String name) {

@@ -160,10 +160,11 @@ extends GuiScreen {
                     }
                     case "Cookie Login": {
                         new Thread(() -> {
-                            this.status = (Object)((Object)EnumChatFormatting.YELLOW) + "Waiting for login...";
+                            this.status = "Waiting for login...";
                             try {
                                 UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
                             } catch (Exception e) {
+                                this.status = "Error setting look and feel";
                                 e.printStackTrace();
                                 return;
                             }
@@ -173,15 +174,16 @@ extends GuiScreen {
                             int returnVal = chooser.showOpenDialog(null);
                             if (returnVal == 0) {
                                 try {
-                                    this.status = (Object)((Object)EnumChatFormatting.YELLOW) + "Logging in...";
+                                    this.status = "Logging in...";
                                     CookieLogin.LoginData loginData = CookieLogin.loginWithCookie(chooser.getSelectedFile());
                                     if (loginData == null) {
-                                        this.status = (Object)((Object)EnumChatFormatting.RED) + "Failed to login with cookie!";
+                                        this.status = "Failed to login with cookie!";
                                         return;
                                     }
-                                    this.status = (Object)((Object)EnumChatFormatting.GREEN) + "Logged in to " + loginData.username + ".";
+                                    this.status = "Logged in to " + loginData.username + ".";
                                     this.mc.setSession(new Session(loginData.username, loginData.uuid, loginData.mcToken, "legacy"));
                                 } catch (Exception e) {
+                                    this.status = "Error during login";
                                     throw new RuntimeException(e);
                                 }
                             }

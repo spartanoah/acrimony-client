@@ -22,6 +22,7 @@ public class ChestStealer
 extends Module {
     private final IntegerSetting delay = new IntegerSetting("Delay", 1, 0, 10, 1);
     private final BooleanSetting filter = new BooleanSetting("Filter", true);
+    public static final BooleanSetting silent = new BooleanSetting("Silent", false);
     private final BooleanSetting autoClose = new BooleanSetting("Autoclose", true);
     private final BooleanSetting guiDetect = new BooleanSetting("Gui detect", true);
     private int counter;
@@ -29,7 +30,7 @@ extends Module {
 
     public ChestStealer() {
         super("Chest Stealer", Category.PLAYER);
-        this.addSettings(this.delay, this.filter, this.autoClose, this.guiDetect);
+        this.addSettings(this.delay, this.filter, this.autoClose, this.guiDetect, silent);
     }
 
     @Override

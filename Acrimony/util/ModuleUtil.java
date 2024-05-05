@@ -18,11 +18,11 @@ import Acrimony.module.impl.movement.Fly;
 import Acrimony.module.impl.movement.Longjump;
 import Acrimony.module.impl.movement.Speed;
 import Acrimony.module.impl.player.InventoryManager;
+import Acrimony.module.impl.player.Scaffold;
 import Acrimony.module.impl.visual.Animations;
 import Acrimony.module.impl.visual.Chams;
 import Acrimony.module.impl.visual.NameProtect;
 import Acrimony.module.impl.visual.Xray;
-import Acrimony.module.impl.world.Scaffold;
 
 public class ModuleUtil {
     private static ModuleManager moduleManager;
