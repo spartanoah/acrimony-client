@@ -24,7 +24,7 @@ import org.lwjgl.input.Keyboard;
 
 public class Longjump
 extends Module {
-    public final ModeSetting mode = new ModeSetting("Mode", "Vanilla", "Vanilla", "Hycraft", "Self damage");
+    public final ModeSetting mode = new ModeSetting("Mode", "Vanilla", "Vanilla", "Self damage", "Hypixel FB");
     private final DoubleSetting motionY = new DoubleSetting("Motion Y", () -> this.mode.is("Vanilla"), 0.4, 0.1, 9.0, 0.1);
     private final DoubleSetting speed = new DoubleSetting("Speed", () -> this.mode.is("Vanilla"), 1.0, 0.1, 9.0, 0.1);
     private final BooleanSetting stopMovement = new BooleanSetting("Stop movement", () -> this.mode.is("Self damage"), false);
@@ -118,23 +118,6 @@ extends Module {
                     break;
                 }
                 Acrimony.instance.getPacketBlinkHandler().startBlinking();
-                break;
-            }
-            case "Hycraft": {
-                if (Longjump.mc.thePlayer.onGround) {
-                    if (this.started) {
-                        this.setEnabled(false);
-                        return;
-                    }
-                    if (Longjump.mc.gameSettings.keyBindJump.isKeyDown()) break;
-                    Longjump.mc.thePlayer.jump();
-                    this.started = true;
-                    break;
-                }
-                if (this.ticks >= 2 && this.ticks <= 8) {
-                    Longjump.mc.thePlayer.motionY += 0.07;
-                }
-                ++this.ticks;
             }
         }
     }
@@ -143,6 +126,9 @@ extends Module {
     public void onEntityAction(EntityActionEvent event) {
         if (this.mode.is("Self damage") && this.stopMovement.isEnabled() && this.counter < 4) {
             event.setSprinting(false);
+        }
+        if (this.mode.is("Hypixel FB")) {
+            Longjump.mc.thePlayer.setSprinting(false);
         }
     }
 
@@ -197,6 +183,16 @@ extends Module {
             case "Self damage": {
                 if (this.started || this.counter >= 3) break;
                 event.setOnGround(false);
+                break;
+            }
+            case "Hypixel FB": {
+                event.setPitch(87.0f);
+                event.setYaw(Longjump.mc.thePlayer.rotationYaw + 180.0f);
+                if (Longjump.mc.thePlayer.ticksSinceExplosionVelo <= 80 && Longjump.mc.thePlayer.ticksSinceExplosionVelo > 1) {
+                    Longjump.mc.thePlayer.motionY += (double)0.028f;
+                }
+                if (Longjump.mc.thePlayer.ticksSinceExplosionVelo != 1) break;
+                MovementUtil.strafe(1.5);
             }
         }
     }

@@ -31,7 +31,7 @@ public class Acrimony
 implements IMinecraft {
     public static final Acrimony instance = new Acrimony();
     public final String name = "Acrimony";
-    public final String version = "v1.0";
+    public final String version = "v1.0.1";
     private EventManager eventManager;
     private ModuleManager moduleManager;
     private CommandManager commandManager;

@@ -275,11 +275,6 @@ extends Module {
             this.attackCounter = 0;
         }
         if (shouldBlock) {
-            if (this.autoblockTicks % 7 != 0) {
-                Acrimony.instance.getPacketBlinkHandler().startBlinking();
-            } else {
-                Acrimony.instance.getPacketBlinkHandler().stopBlinking();
-            }
             this.afterAttackAutoblock(attackTick);
         } else {
             this.releaseBlocking();
@@ -498,6 +493,11 @@ extends Module {
                 break;
             }
             case "Watchdog": {
+                if (this.autoblockTicks % 5 != 0) {
+                    Acrimony.instance.getPacketBlinkHandler().startBlinking();
+                } else {
+                    Acrimony.instance.getPacketBlinkHandler().stopBlinking();
+                }
                 Acrimony.util.network.PacketUtil.sendPacketNoEvent(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 255, Killaura.mc.thePlayer.inventory.getCurrentItem(), 0.0f, 0.0f, 0.0f));
                 PacketWrapper useItem = PacketWrapper.create(29, null, Via.getManager().getConnectionManager().getConnections().iterator().next());
                 useItem.write(Type.VAR_INT, 1);

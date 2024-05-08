@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.multiplayer;
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,6 +22,7 @@ import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.C00PacketLoginStart;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
+import net.vialoadingbase.ViaLoadingBase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,6 +40,11 @@ extends GuiScreen {
         ServerAddress serveraddress = ServerAddress.func_78860_a(p_i1181_3_.serverIP);
         mcIn.loadWorld(null);
         mcIn.setServerData(p_i1181_3_);
+        if (p_i1181_3_.serverIP.contains("hypixel")) {
+            ViaLoadingBase.getInstance().reload(ProtocolVersion.v1_12_2);
+        } else {
+            ViaLoadingBase.getInstance().reload(ProtocolVersion.v1_8);
+        }
         this.connect(serveraddress.getIP(), serveraddress.getPort());
     }
 

@@ -1032,6 +1032,7 @@ implements IBlockAccess {
             Entity entity = this.weatherEffects.get(i);
             try {
                 ++entity.ticksExisted;
+                ++entity.ticksSinceExplosionVelo;
                 entity.onUpdate();
             } catch (Throwable throwable2) {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable2, "Ticking entity");
@@ -1174,6 +1175,7 @@ implements IBlockAccess {
             entityIn.prevRotationPitch = entityIn.rotationPitch;
             if (forceUpdate && entityIn.addedToChunk) {
                 ++entityIn.ticksExisted;
+                ++entityIn.ticksSinceExplosionVelo;
                 if (entityIn.ridingEntity != null) {
                     entityIn.updateRidden();
                 } else {

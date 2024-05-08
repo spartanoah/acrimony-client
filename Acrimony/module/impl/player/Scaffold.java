@@ -663,7 +663,7 @@ extends Module {
                 this.placing = true;
             }
             if (WorldUtil.isAirOrLiquid(pos) && this.info != null) {
-                Vec3 vec3 = WorldUtil.getVec3(this.info.pos, this.info.facing, true);
+                Vec3 vec3 = WorldUtil.getVec3ClosestFromRots(this.info.pos, this.info.facing, true, this.rotations.getYaw(), this.rotations.getPitch());
                 float[] rots = RotationsUtil.getRotationsToPosition(vec3.xCoord, vec3.yCoord, vec3.zCoord);
                 this.rotations.updateRotations(rots[0], rots[1]);
                 this.placeBlock(vec3);
@@ -676,7 +676,6 @@ extends Module {
         } else if (this.jumpSprintMode.is("Rise/Opal")) {
             if (Scaffold.mc.thePlayer.onGround || KeyboardUtil.isPressed(Scaffold.mc.gameSettings.keyBindJump)) {
                 this.placeY = Scaffold.mc.thePlayer.posY;
-                LogUtil.addChatMessage("This Mode is still on working progress");
                 Scaffold.mc.gameSettings.keyBindJump.pressed = true;
             } else if (!KeyboardUtil.isPressed(Scaffold.mc.gameSettings.keyBindJump)) {
                 Scaffold.mc.gameSettings.keyBindJump.pressed = false;
@@ -685,19 +684,26 @@ extends Module {
             this.info = WorldUtil.getBlockInfo(pos, 3);
             this.overAir = WorldUtil.isAirOrLiquid(pos);
             if (!this.jumpTick) {
-                Scaffold.mc.thePlayer.motionX *= (Scaffold.mc.thePlayer.motionZ *= 0.0);
+                Scaffold.mc.thePlayer.motionZ = 0.0;
+                Scaffold.mc.thePlayer.motionX *= 0.0;
             }
-            if (!this.overAir && this.sprintTicks >= 1 && this.placing) {
+            if (this.sprintTicks >= 2) {
                 this.jumpTick = true;
-                this.offGroundTicks = 0;
             }
-            if (!this.overAir && this.sprintTicks % 2 != 0 && this.jumpTick && this.sprintTicks >= 1) {
-                pos = new BlockPos(Scaffold.mc.thePlayer.posX - Scaffold.mc.thePlayer.motionX * 2.0, this.placeY, Scaffold.mc.thePlayer.posZ - Scaffold.mc.thePlayer.motionZ * 2.0);
+            if (this.jumpTick) {
+                if (this.offGroundTicks == 5) {
+                    pos = new BlockPos(Scaffold.mc.thePlayer.posX, this.placeY, Scaffold.mc.thePlayer.posZ);
+                }
+                if (this.offGroundTicks == 8) {
+                    MovementUtil.incrementMoveDirection(0.2f, 0.0f);
+                } else {
+                    MovementUtil.incrementMoveDirection(1.2f, 0.0f);
+                }
                 this.info = WorldUtil.getBlockInfo(pos, 3);
                 this.overAir = WorldUtil.isAirOrLiquid(pos);
                 this.placing = true;
             }
-            if (WorldUtil.isAirOrLiquid(pos) && this.info != null) {
+            if (this.info != null) {
                 Vec3 vec3 = WorldUtil.getVec3ClosestFromRots(this.info.pos, this.info.facing, true, this.rotations.getYaw(), this.rotations.getPitch());
                 float[] rots = RotationsUtil.getRotationsToPosition(vec3.xCoord, vec3.yCoord, vec3.zCoord);
                 this.rotations.updateRotations(rots[0], rots[1]);
@@ -1497,12 +1503,16 @@ extends Module {
                 break;
             }
             case "Hypixel jump": {
-                if (this.towering && MovementUtil.isMoving()) {
-                    event.setCancelled(true);
-                }
                 ++this.sprintTicks;
-                if (this.sprintTicks % 2 != 0) break;
-                event.setBoostAmount(0.201f);
+                if (this.sprintTicks % 2 == 0) {
+                    if (this.jumpSprintMode.is("Novoline")) {
+                        event.setBoostAmount(0.201f);
+                    } else {
+                        event.setBoostAmount(0.201f);
+                    }
+                }
+                if (this.sprintTicks <= 1) break;
+                event.setBoosting(true);
                 break;
             }
             case "Andromeda": {

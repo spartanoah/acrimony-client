@@ -1860,7 +1860,7 @@ implements IResourceManagerReloadListener {
                     }
                 } else {
                     if (this.mc.currentScreen instanceof GuiDownloadTerrain) {
-                        Config.sleep(20L);
+                        // empty if block
                     }
                     this.lastServerTime = 0L;
                     this.lastServerTicks = 0;

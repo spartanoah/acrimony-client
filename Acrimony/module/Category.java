@@ -10,7 +10,7 @@ public enum Category {
     VISUAL,
     MISC,
     GHOST,
-    SCRIPTS;
+    EXPLOIT;
 
 }
 

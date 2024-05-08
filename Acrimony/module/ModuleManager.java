@@ -11,6 +11,7 @@ import Acrimony.module.impl.combat.TargetStrafe;
 import Acrimony.module.impl.combat.Teams;
 import Acrimony.module.impl.combat.Tickbase;
 import Acrimony.module.impl.combat.Velocity;
+import Acrimony.module.impl.exploit.Disabler;
 import Acrimony.module.impl.ghost.AimAssist;
 import Acrimony.module.impl.ghost.Autoclicker;
 import Acrimony.module.impl.ghost.Backtrack;
@@ -25,10 +26,10 @@ import Acrimony.module.impl.misc.SelfDestruct;
 import Acrimony.module.impl.movement.Blink;
 import Acrimony.module.impl.movement.Fly;
 import Acrimony.module.impl.movement.InventoryMove;
+import Acrimony.module.impl.movement.Longjump;
 import Acrimony.module.impl.movement.Noslow;
 import Acrimony.module.impl.movement.Speed;
 import Acrimony.module.impl.movement.Sprint;
-import Acrimony.module.impl.movement.Turnback;
 import Acrimony.module.impl.player.Antivoid;
 import Acrimony.module.impl.player.AutoTool;
 import Acrimony.module.impl.player.Breaker;
@@ -78,13 +79,13 @@ public class ModuleManager {
         this.modules.add(new Antibot());
         this.modules.add(new KeepSprint());
         this.modules.add(new Sprint());
-        this.modules.add(new Turnback());
         this.modules.add(new Fly());
         this.modules.add(new Speed());
         this.modules.add(new InventoryMove());
         this.modules.add(new Noslow());
         this.modules.add(new Blink());
         this.modules.add(new Safewalk());
+        this.modules.add(new Longjump());
         this.modules.add(new ChestStealer());
         this.modules.add(new InventoryManager());
         this.modules.add(new Nofall());
@@ -113,6 +114,7 @@ public class ModuleManager {
         this.modules.add(new Cape());
         this.modules.add(new Autoplay());
         this.modules.add(new SelfDestruct());
+        this.modules.add(new Disabler());
         this.hudModules = this.modules.stream().filter(HUDModule.class::isInstance).map(HUDModule.class::cast).collect(Collectors.toList());
     }
 

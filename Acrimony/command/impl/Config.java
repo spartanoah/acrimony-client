@@ -7,6 +7,8 @@ import Acrimony.Acrimony;
 import Acrimony.command.Command;
 import Acrimony.ui.notification.Notification;
 import Acrimony.ui.notification.NotificationType;
+import Acrimony.util.misc.LogUtil;
+import java.util.List;
 
 public class Config
 extends Command {
@@ -32,6 +34,12 @@ extends Command {
                 case "save": {
                     Acrimony.instance.getFileSystem().saveConfig(configName);
                     Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.WARNING, "Config announcement", "Saved config as " + configName + " in game.", 3000L));
+                    break;
+                }
+                case "list": {
+                    List<String> configList = Acrimony.instance.getFileSystem().getConfigList();
+                    StringBuilder message = new StringBuilder("Available configs:");
+                    LogUtil.addChatMessage("\\u001B[34m Acrimony: " + message.append(configList));
                 }
             }
         }

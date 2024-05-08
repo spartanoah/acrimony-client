@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 
 public class FileSystem {
@@ -80,6 +81,20 @@ public class FileSystem {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<String> getConfigList() {
+        ArrayList<String> configList = new ArrayList<String>();
+        File[] files = this.AcrimonyConfigDir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                String fileName;
+                if (!file.isFile() || !(fileName = file.getName()).endsWith(".txt")) continue;
+                String configName = fileName.substring(0, fileName.length() - 4);
+                configList.add(configName);
+            }
+        }
+        return configList;
     }
 
     public boolean loadConfig(String configName, boolean defaultConfig) {

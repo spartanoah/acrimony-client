@@ -111,6 +111,7 @@ implements ICommandSender {
     public float entityCollisionReduction;
     protected Random rand = new Random();
     public int ticksExisted;
+    public int ticksSinceExplosionVelo;
     public int fireResistance = 1;
     private int fire;
     protected boolean inWater;

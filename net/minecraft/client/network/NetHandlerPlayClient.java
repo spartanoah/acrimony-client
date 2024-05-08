@@ -26,7 +26,6 @@ import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiDisconnected;
-import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.gui.GuiMerchant;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
@@ -250,7 +249,6 @@ implements INetHandlerPlayClient {
         this.gameController.gameSettings.difficulty = packetIn.getDifficulty();
         this.gameController.loadWorld(this.clientWorldController);
         this.gameController.thePlayer.dimension = packetIn.getDimension();
-        this.gameController.displayGuiScreen(new GuiDownloadTerrain(this));
         this.gameController.thePlayer.setEntityId(packetIn.getEntityId());
         this.currentServerMaxPlayers = packetIn.getMaxPlayers();
         this.gameController.thePlayer.setReducedDebug(packetIn.isReducedDebugInfo());
@@ -770,7 +768,6 @@ implements INetHandlerPlayClient {
             this.clientWorldController.setWorldScoreboard(scoreboard);
             this.gameController.loadWorld(this.clientWorldController);
             this.gameController.thePlayer.dimension = packetIn.getDimensionID();
-            this.gameController.displayGuiScreen(new GuiDownloadTerrain(this));
         }
         this.gameController.setDimensionAndSpawnPlayer(packetIn.getDimensionID());
         this.gameController.playerController.setGameType(packetIn.getGameType());
@@ -784,6 +781,9 @@ implements INetHandlerPlayClient {
         this.gameController.thePlayer.motionX += (double)packetIn.func_149149_c();
         this.gameController.thePlayer.motionY += (double)packetIn.func_149144_d();
         this.gameController.thePlayer.motionZ += (double)packetIn.func_149147_e();
+        if (packetIn.func_149144_d() != 0.0f && packetIn.func_149147_e() != 0.0f && packetIn.func_149149_c() != 0.0f) {
+            Minecraft.getMinecraft().thePlayer.ticksSinceExplosionVelo = 0;
+        }
     }
 
     @Override
