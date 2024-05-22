@@ -226,7 +226,7 @@ implements IProjectile {
         ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.inTile);
         tagCompound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
         tagCompound.setByte("shake", (byte)this.throwableShake);
-        tagCompound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+        tagCompound.setByte("inGround", (byte)(this.inGround ? (char)'\u0001' : '\u0000'));
         if ((this.throwerName == null || this.throwerName.length() == 0) && this.thrower instanceof EntityPlayer) {
             this.throwerName = this.thrower.getCommandSenderName();
         }

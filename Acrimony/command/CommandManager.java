@@ -7,6 +7,7 @@ import Acrimony.Acrimony;
 import Acrimony.command.Command;
 import Acrimony.command.impl.Bind;
 import Acrimony.command.impl.Config;
+import Acrimony.command.impl.ConfigList;
 import Acrimony.command.impl.Toggle;
 import Acrimony.event.Listener;
 import Acrimony.event.impl.ChatSendEvent;
@@ -22,6 +23,7 @@ public class CommandManager {
         this.commands.add(new Toggle());
         this.commands.add(new Bind());
         this.commands.add(new Config());
+        this.commands.add(new ConfigList());
     }
 
     @Listener

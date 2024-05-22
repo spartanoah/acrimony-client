@@ -372,7 +372,7 @@ extends RewriterBase<Protocol1_12_2To1_13> {
                     wrapper.passthrough(Type.STRING);
                     byte flags = 0;
                     if (wrapper.read(Type.BOOLEAN).booleanValue()) {
-                        flags = (byte)(flags | 1);
+                        flags = (byte)(flags | '\u0001');
                     }
                     int modeId = (mode = wrapper.read(Type.STRING)).equals("SEQUENCE") ? 0 : (mode.equals("AUTO") ? 1 : 2);
                     wrapper.write(Type.VAR_INT, modeId);
@@ -409,7 +409,7 @@ extends RewriterBase<Protocol1_12_2To1_13> {
                     wrapper.passthrough(Type.STRING);
                     byte flags = 0;
                     if (wrapper.read(Type.BOOLEAN).booleanValue()) {
-                        flags = (byte)(flags | 1);
+                        flags = (byte)(flags | '\u0001');
                     }
                     if (wrapper.read(Type.BOOLEAN).booleanValue()) {
                         flags = (byte)(flags | 2);

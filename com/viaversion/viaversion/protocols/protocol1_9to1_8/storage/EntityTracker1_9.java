@@ -164,7 +164,7 @@ extends EntityTrackerBase {
                     }
                 }
                 if (metadata.id() == 12 && Via.getConfig().isLeftHandedHandling()) {
-                    metadataList.add(new Metadata(13, MetaType1_9.Byte, (byte)(((Byte)metadata.getValue() & 0x80) == 0 ? 1 : 0)));
+                    metadataList.add(new Metadata(13, MetaType1_9.Byte, (byte)(((Byte)metadata.getValue() & 0x80) == 0 ? (char)'\u0001' : '\u0000')));
                 }
             }
             if (type == EntityTypes1_10.EntityType.ARMOR_STAND && Via.getConfig().isHologramPatch() && metadata.id() == 0 && this.getMetaByIndex(metadataList, 10) != null) {

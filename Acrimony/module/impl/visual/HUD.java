@@ -5,7 +5,9 @@ package Acrimony.module.impl.visual;
 
 import Acrimony.Acrimony;
 import Acrimony.event.Listener;
+import Acrimony.event.impl.Alternative3DEvent;
 import Acrimony.event.impl.PostMotionEvent;
+import Acrimony.event.impl.Render2DEvent;
 import Acrimony.font.AcrimonyFont;
 import Acrimony.module.AlignType;
 import Acrimony.module.Category;
@@ -22,8 +24,12 @@ import Acrimony.util.animation.AnimationType;
 import Acrimony.util.network.ServerUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import java.awt.Color;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Objects;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 
@@ -34,9 +40,11 @@ extends HUDModule {
     private final BooleanSetting showwater = new BooleanSetting("Client WaterMark", true);
     private final BooleanSetting showarray = new BooleanSetting("Client ArrayList", true);
     private final BooleanSetting infomation = new BooleanSetting("Game Infomation", true);
-    public static final BooleanSetting notification = new BooleanSetting("Notification", true);
-    public static ModeSetting notificationmode = new ModeSetting("notification mode", () -> notification.isEnabled(), "Simple", "Simple", "Outline", "Blur", "Jello");
-    public static final BooleanSetting notificationsounds = new BooleanSetting("Toggle module Sound", () -> notification.isEnabled(), true);
+    private static BooleanSetting shownoti = new BooleanSetting("Nothifications", true);
+    private static BooleanSetting moresetting = new BooleanSetting("Misc setting", true);
+    public static final BooleanSetting notification = new BooleanSetting("Enable Noti", () -> shownoti.isEnabled(), true);
+    public static ModeSetting notificationmode = new ModeSetting("notification mode", () -> notification.isEnabled() && shownoti.isEnabled(), "Simple", "Simple", "Outline", "Blur", "Jello");
+    public static final BooleanSetting notificationsounds = new BooleanSetting("Toggle module Sound", () -> notification.isEnabled() && shownoti.isEnabled(), true);
     private final ModeSetting arraymode = new ModeSetting("Array Mode", () -> this.showarray.isEnabled(), "Simple", "Simple", "Outline", "Blur", "Jello");
     private final ModeSetting arrayfont = new ModeSetting("Array CFont", () -> this.showarray.isEnabled(), "SfPro", "SfPro", "SfBold", "Mc");
     private final ModeSetting watermode = new ModeSetting("Mark Mode", () -> this.showwater.isEnabled(), "New", "New mark", "Old mark", "Blur mark", "Jello");
@@ -63,10 +71,12 @@ extends HUDModule {
     private AcrimonyFont jellosemibold;
     private AcrimonyFont jellosemiboldTitle;
     private ClientTheme theme;
+    public static float startY = 0.0f;
+    public static float y;
 
     public HUD() {
         super("HUD", Category.VISUAL, 5.0, 5.0, 100, 200, AlignType.RIGHT);
-        this.addSettings(this.showwater, this.watermode, this.waterfont, this.showarray, this.arraymode, this.arrayfont, this.blurmode, this.colorRedValue, this.colorGreenValue, this.colorBlueValue, this.animation, this.suffix, this.important, this.alignMode, this.infomation, this.bps, this.balance, this.infobg, notification, notificationmode, notificationsounds);
+        this.addSettings(this.showwater, this.watermode, this.waterfont, this.showarray, this.arraymode, this.arrayfont, this.blurmode, this.colorRedValue, this.colorGreenValue, this.colorBlueValue, this.animation, this.suffix, this.important, this.alignMode, this.infomation, this.bps, this.balance, this.infobg, shownoti, notification, notificationmode, notificationsounds, moresetting);
         this.listenType = EventListenType.MANUAL;
         this.setStateHidden(true);
         this.startListening();
@@ -169,9 +179,9 @@ extends HUDModule {
     private void sort() {
         Collections.reverse(this.modules);
         if (this.suffix.isEnabled()) {
-            this.modules.sort((m1, m2) -> (int)Math.round(this.getStringWidth(((Module)m1.get()).getDisplayName()) * 8.0 - (double)Math.round(this.getStringWidth(((Module)m2.get()).getDisplayName()) * 8.0)));
+            this.modules.sort((m1, m2) -> (int)Math.round(this.arraygetStringWidth(((Module)m1.get()).getDisplayName()) * 8.0 - (double)Math.round(this.arraygetStringWidth(((Module)m2.get()).getDisplayName()) * 8.0)));
         } else {
-            this.modules.sort((m1, m2) -> (int)Math.round(this.getStringWidth(((Module)m1.get()).getName()) * 8.0 - (double)Math.round(this.getStringWidth(((Module)m2.get()).getName()) * 8.0)));
+            this.modules.sort((m1, m2) -> (int)Math.round(this.arraygetStringWidth(((Module)m1.get()).getName()) * 8.0 - (double)Math.round(this.arraygetStringWidth(((Module)m2.get()).getName()) * 8.0)));
         }
         Collections.reverse(this.modules);
         Collections.reverseOrder();
@@ -180,7 +190,7 @@ extends HUDModule {
     private void renderSimple() {
         ScaledResolution sr = new ScaledResolution(mc);
         float x = (float)this.posX.getValue();
-        float y = (float)this.posY.getValue();
+        y = (float)this.posY.getValue();
         float offsetY = 11.0f;
         float lastStartX = 0.0f;
         float lastEndX = 0.0f;
@@ -213,7 +223,7 @@ extends HUDModule {
     private void renderOutline() {
         ScaledResolution sr = new ScaledResolution(mc);
         float x = (float)this.posX.getValue();
-        float y = (float)this.posY.getValue();
+        y = (float)this.posY.getValue();
         float offsetY = 11.0f;
         float lastStartX = 0.0f;
         float lastEndX = 0.0f;
@@ -227,7 +237,7 @@ extends HUDModule {
             holder.updateState(m.isEnabled());
             if (holder.isAnimDone() && !holder.isRendered()) continue;
             float startX = this.alignMode.getMode() == AlignType.LEFT ? x : (float)((double)sr.getScaledWidth() - this.arraygetStringWidth(name) - (double)x);
-            float startY = y;
+            startY = y;
             float finalLastStartX = lastStartX;
             float endX = this.alignMode.getMode() == AlignType.LEFT ? (float)((double)x + this.arraygetStringWidth(name)) : (float)sr.getScaledWidth() - x;
             float endY = y + offsetY;
@@ -353,9 +363,12 @@ extends HUDModule {
     }
 
     private void WaterrenderNew() {
-        String clientName = Acrimony.instance.name;
+        Objects.requireNonNull(Acrimony.instance);
+        String clientName = "Acrimony";
         String formattedClientName = String.valueOf(clientName.charAt(0)) + (Object)((Object)ChatFormatting.WHITE) + clientName.substring(1, clientName.length());
-        String watermark = formattedClientName + " " + Acrimony.instance.version;
+        StringBuilder stringBuilder = new StringBuilder().append(formattedClientName).append(" ");
+        Objects.requireNonNull(Acrimony.instance);
+        String watermark = stringBuilder.append("v1.0.3").toString();
         double watermarkWidth = this.watergetStringWidth(watermark);
         float x = (float)this.posX.getValue();
         float y = (float)this.posY.getValue();
@@ -365,9 +378,15 @@ extends HUDModule {
     }
 
     private void WaterrenderOld() {
-        String clientName = Acrimony.instance.name;
+        Objects.requireNonNull(Acrimony.instance);
+        String clientName = "Acrimony";
         String formattedClientName = String.valueOf(clientName.charAt(0)) + (Object)((Object)ChatFormatting.WHITE) + clientName.substring(1, clientName.length());
-        String watermark = formattedClientName + " " + Acrimony.instance.version + " | " + mc.getDebugFPS() + "FPS | " + ServerUtil.getCurrentServer();
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(11);
+        String time = hour >= 12 ? new SimpleDateFormat("hh:mma").format(new Date()) : new SimpleDateFormat("hh:mma").format(new Date());
+        StringBuilder stringBuilder = new StringBuilder().append(formattedClientName).append(" ");
+        Objects.requireNonNull(Acrimony.instance);
+        String watermark = stringBuilder.append("v1.0.3").append(" | ").append(time).append(" | ").append(ServerUtil.getCurrentServer()).toString();
         double watermarkWidth = this.watergetStringWidth(watermark);
         float x = (float)this.posX.getValue();
         float y = (float)this.posY.getValue();
@@ -383,9 +402,12 @@ extends HUDModule {
     }
 
     private void WaterrenderBlur() {
-        String clientName = Acrimony.instance.name;
+        Objects.requireNonNull(Acrimony.instance);
+        String clientName = "Acrimony";
         String formattedClientName = String.valueOf(clientName.charAt(0)) + (Object)((Object)ChatFormatting.WHITE) + clientName.substring(1, clientName.length());
-        String watermark = formattedClientName + " " + Acrimony.instance.version + " | " + mc.getDebugFPS() + "FPS | " + ServerUtil.getCurrentServer();
+        StringBuilder stringBuilder = new StringBuilder().append(formattedClientName).append(" ");
+        Objects.requireNonNull(Acrimony.instance);
+        String watermark = stringBuilder.append("v1.0.3").append(" | ").append(mc.getDebugFPS()).append("FPS | ").append(ServerUtil.getCurrentServer()).toString();
         double watermarkWidth = this.watergetStringWidth(watermark);
         float x = (float)this.posX.getValue();
         float y = (float)this.posY.getValue();
@@ -506,6 +528,14 @@ extends HUDModule {
 
     public int getColor(int offset) {
         return this.theme.getColor(offset);
+    }
+
+    @Listener
+    public void on2DEvent(Render2DEvent e) {
+    }
+
+    @Listener
+    public void onAlternative(Alternative3DEvent e) {
     }
 }
 

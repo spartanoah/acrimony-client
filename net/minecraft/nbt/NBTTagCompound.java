@@ -106,7 +106,7 @@ extends NBTBase {
     }
 
     public void setBoolean(String key, boolean value) {
-        this.setByte(key, (byte)(value ? 1 : 0));
+        this.setByte(key, (byte)(value ? (char)'\u0001' : '\u0000'));
     }
 
     public NBTBase getTag(String key) {

@@ -102,7 +102,7 @@ public class MetadataRewriter {
                                 entry.setValue((byte)((Boolean)value != false ? -1 : 0));
                                 break;
                             }
-                            entry.setValue((byte)((Boolean)value != false ? 1 : 0));
+                            entry.setValue((byte)((Boolean)value != false ? (char)'\u0001' : '\u0000'));
                             break;
                         }
                         case Slot: {

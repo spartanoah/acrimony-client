@@ -191,9 +191,8 @@ implements IMinecraft {
                         int endX = length + 36;
                         int endY = height;
                         notif.render(() -> {
-                            int color = ((Notification)notif.get()).getType() == NotificationType.INFO ? new Color(77, 182, 77, 255).getRGB() : (((Notification)notif.get()).getType() == NotificationType.WARNING ? new Color(182, 182, 84, 255).getRGB() : (((Notification)notif.get()).getType() == NotificationType.ERROR ? new Color(206, 78, 78, 255).getRGB() : 0x65000000));
                             Acrimony.instance.blurHandler.bloom(startX - 38, startY, endX, endY, ClientTheme.blurradius.getValue(), new Color(0, 0, 0, 150));
-                            Acrimony.instance.blurHandler.bloom(startX - 38, startY, 30, endY, ClientTheme.blurradius.getValue(), color);
+                            Acrimony.instance.blurHandler.bloom(startX - 38, startY, 30, endY, ClientTheme.blurradius.getValue(), this.theme.getColor(startY * -17));
                             if (((Notification)notif.get()).getType() == NotificationType.INFO) {
                                 icon.drawStringWithShadow("o", (double)startX - 31.5, (double)(startY + 8), -1);
                             } else if (((Notification)notif.get()).getType() == NotificationType.WARNING) {

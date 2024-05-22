@@ -5,11 +5,12 @@ package Acrimony.util.misc;
 
 import Acrimony.Acrimony;
 import Acrimony.util.IMinecraft;
+import java.util.Objects;
 import net.minecraft.util.ChatComponentText;
 
 public class LogUtil
 implements IMinecraft {
-    private static final String prefix = "[" + Acrimony.instance.name + "]";
+    private static final String prefix;
 
     public static void print(Object message) {
         System.out.println(prefix + " " + message);
@@ -17,6 +18,12 @@ implements IMinecraft {
 
     public static void addChatMessage(String message) {
         LogUtil.mc.thePlayer.addChatMessage(new ChatComponentText(message));
+    }
+
+    static {
+        StringBuilder stringBuilder = new StringBuilder().append("[");
+        Objects.requireNonNull(Acrimony.instance);
+        prefix = stringBuilder.append("Acrimony").append("]").toString();
     }
 }
 

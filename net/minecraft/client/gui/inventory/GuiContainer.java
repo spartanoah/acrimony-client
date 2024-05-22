@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -77,7 +78,8 @@ extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         ItemStack itemstack;
         if (ChestStealer.silent.isEnabled() && Acrimony.instance.getModuleManager().getModule(ChestStealer.class).isEnabled() && this.mc.currentScreen instanceof GuiChest && !Mouse.isGrabbed()) {
-            this.drawString(this.fontRendererObj, "Stealing...", 250, this.ySize + 50, -1);
+            ScaledResolution sr = new ScaledResolution(this.mc);
+            this.drawString(this.fontRendererObj, "Stealing...", sr.getScaledWidth() / 2 - this.mc.fontRendererObj.getStringWidth("Stealing...") + 18, this.ySize + 100, -1);
             return;
         }
         this.drawDefaultBackground();

@@ -4,6 +4,7 @@
 package net.minecraft.client.renderer.entity;
 
 import Acrimony.Acrimony;
+import Acrimony.util.waveycapes.renderlayers.CustomCapeRenderLayer;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.model.ModelPlayer;
@@ -41,6 +42,7 @@ extends RendererLivingEntity<AbstractClientPlayer> {
         this.addLayer(new LayerDeadmau5Head(this));
         this.addLayer(new LayerCape(this));
         this.addLayer(new LayerCustomHead(this.getMainModel().bipedHead));
+        this.addLayer(new CustomCapeRenderLayer(this, this.getMainModel()));
     }
 
     @Override

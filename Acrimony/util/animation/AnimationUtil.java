@@ -30,6 +30,14 @@ public class AnimationUtil {
         return time / animationLengthMS * 100.0;
     }
 
+    public static IntegerSetting getOverScaledDuration(int defaultDuration) {
+        return new IntegerSetting("Overscaled duration percentage", defaultDuration, 0, 100, 1);
+    }
+
+    public static IntegerSetting getOverScaledDuration(Supplier<Boolean> visibility, int defaultDuration) {
+        return new IntegerSetting("Overscaled duration percentage", visibility, defaultDuration, 0, 100, 1);
+    }
+
     public static double getDoubleFromPercentage(double percentage, double size) {
         return size / 100.0 * percentage;
     }

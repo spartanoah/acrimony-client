@@ -739,7 +739,7 @@ implements IWorldNameable {
     }
 
     public void setHasDisplayTile(boolean p_94096_1_) {
-        this.getDataWatcher().updateObject(22, (byte)(p_94096_1_ ? 1 : 0));
+        this.getDataWatcher().updateObject(22, (byte)(p_94096_1_ ? (char)'\u0001' : '\u0000'));
     }
 
     @Override

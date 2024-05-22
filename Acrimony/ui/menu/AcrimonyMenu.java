@@ -15,6 +15,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiOptions;
@@ -46,9 +47,9 @@ extends GuiScreen {
         this.changelogs.clear();
         int initHeight = this.height / 4 + 48;
         int initWidth = this.width / 2 - 51;
-        this.changelogs.add(new Changelog(new String[]{"Added New Blur", "Added custom compresion & radius blur", "Added shader on main menu", "Added Capes With Lots of Modes", "More Color Themes to choose from", "Added Sigma HUD", "Added Sigma Arraylist", "And more!"}, ChangelogType.ADD));
-        this.changelogs.add(new Changelog(new String[]{"Fixed shaders crashing", "Cookie Login opens on a different tab (causing confusion)", "Unpatched Watchdog Autoblock"}, ChangelogType.FIXED));
-        this.changelogs.add(new Changelog(new String[]{"Removed chat font in better visuals", "Removed spotify", "Removed remove chat background", "Removed vulcan glide fly", "Removed discord rpc"}, ChangelogType.REMOVE));
+        this.changelogs.add(new Changelog(new String[]{"Added New Capes!", "Added A Hypixel New Lowhop Tower!", "Added NetInfo Module!", "Added Killaura BOX ESP", "Added Zeroday Targethud", "Added Novoline Targethud", "Added Lime Recode Targethud", "Added new Font", "Added Blur Options on HUD", "Added AutoUpdate Config", "New Command .list onlinelist to see online config list", "New Command .config install (config name)", "Added Online Configs"}, ChangelogType.ADD));
+        this.changelogs.add(new Changelog(new String[]{"Fix ArrayList Font width"}, ChangelogType.FIXED));
+        this.changelogs.add(new Changelog(new String[]{"Removed None Needed Code"}, ChangelogType.REMOVE));
         this.buttonList.add(new GuiButton(0, initWidth - 40, initHeight + 20, "Singleplayer"));
         this.buttonList.add(new GuiButton(1, initWidth - 40, initHeight + 42, "Multiplayer"));
         this.buttonList.add(new GuiButton(2, initWidth - 40, initHeight + 64, "AltManager"));
@@ -102,7 +103,9 @@ extends GuiScreen {
         for (GuiButton g : this.buttonList) {
             g.drawButton(this.mc, mouseX, mouseY);
         }
-        titleFont.drawString("Changelog [#" + Acrimony.instance.version + "]", 5.0, 5.0, -1);
+        StringBuilder stringBuilder = new StringBuilder().append("Changelog [#");
+        Objects.requireNonNull(Acrimony.instance);
+        titleFont.drawString(stringBuilder.append("v1.0.3").append("]").toString(), 5.0, 5.0, -1);
         int changeY = 0;
         for (Changelog c : this.changelogs) {
             int set = 0;
@@ -127,8 +130,17 @@ extends GuiScreen {
             changeY += c.getDescription().length * 12;
         }
         reguler.drawStringWithShadow("Developed with " + (Object)((Object)ChatFormatting.RED) + "<3" + (Object)((Object)ChatFormatting.RESET) + " by kitxk1 & sophia_yu", (double)(this.width - reguler.getStringWidth("Developed with " + (Object)((Object)ChatFormatting.RED) + "<3" + (Object)((Object)ChatFormatting.RESET) + " by kitxk1 & sophia_yu") - 13), (double)(this.height - 15), -1);
-        reguler.drawStringWithShadow(Acrimony.instance.name + " Client [#" + Acrimony.instance.version + "]", (double)((float)(this.width - reguler.getStringWidth(Acrimony.instance.name + " Client [#" + Acrimony.instance.version + "]")) / 110.0f), (double)(this.height - 15), -1);
-        DrawUtil.drawImage(new ResourceLocation("minecraft", "acrimony/logo.png"), sr.getScaledWidth() / 2 - 70, this.height / 4 - 55, 160, 160);
+        StringBuilder stringBuilder2 = new StringBuilder();
+        Objects.requireNonNull(Acrimony.instance);
+        StringBuilder stringBuilder3 = stringBuilder2.append("Acrimony").append(" Client [#");
+        Objects.requireNonNull(Acrimony.instance);
+        String string = stringBuilder3.append("v1.0.3").append("]").toString();
+        StringBuilder stringBuilder4 = new StringBuilder();
+        Objects.requireNonNull(Acrimony.instance);
+        StringBuilder stringBuilder5 = stringBuilder4.append("Acrimony").append(" Client [#");
+        Objects.requireNonNull(Acrimony.instance);
+        reguler.drawStringWithShadow(string, (double)((float)(this.width - reguler.getStringWidth(stringBuilder5.append("v1.0.3").append("]").toString())) / 110.0f), (double)(this.height - 15), -1);
+        DrawUtil.drawImage(new ResourceLocation("minecraft", "acrimony/acrimony.png"), sr.getScaledWidth() / 2 - 35, this.height / 4 - 55, 80, 80);
     }
 }
 

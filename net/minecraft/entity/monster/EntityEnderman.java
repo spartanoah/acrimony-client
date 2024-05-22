@@ -292,7 +292,7 @@ extends EntityMob {
     }
 
     public void setScreaming(boolean screaming) {
-        this.dataWatcher.updateObject(18, (byte)(screaming ? 1 : 0));
+        this.dataWatcher.updateObject(18, (byte)(screaming ? (char)'\u0001' : '\u0000'));
     }
 
     static {

@@ -327,7 +327,7 @@ public class JsonToNBT {
                     return new NBTTagDouble(Double.parseDouble(this.jsonValue));
                 }
                 if (this.jsonValue.equalsIgnoreCase("true") || this.jsonValue.equalsIgnoreCase("false")) {
-                    return new NBTTagByte((byte)(Boolean.parseBoolean(this.jsonValue) ? 1 : 0));
+                    return new NBTTagByte((byte)(Boolean.parseBoolean(this.jsonValue) ? (char)'\u0001' : '\u0000'));
                 }
             } catch (NumberFormatException var6) {
                 this.jsonValue = this.jsonValue.replaceAll("\\\\\"", "\"");

@@ -45,7 +45,7 @@ implements Packet<INetHandlerPlayServer> {
     public void writePacketData(PacketBuffer buf) throws IOException {
         byte b0 = 0;
         if (this.isInvulnerable()) {
-            b0 = (byte)(b0 | 1);
+            b0 = (byte)(b0 | '\u0001');
         }
         if (this.isFlying()) {
             b0 = (byte)(b0 | 2);

@@ -835,7 +835,7 @@ extends EntityLivingBase {
     }
 
     public void setNoAI(boolean disable) {
-        this.dataWatcher.updateObject(15, (byte)(disable ? 1 : 0));
+        this.dataWatcher.updateObject(15, (byte)(disable ? (char)'\u0001' : '\u0000'));
     }
 
     public boolean isAIDisabled() {

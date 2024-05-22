@@ -4,9 +4,12 @@
 package net.minecraft.client.renderer;
 
 import Acrimony.Acrimony;
+import Acrimony.event.impl.Alternative3DEvent;
 import Acrimony.event.impl.Render3DEvent;
 import Acrimony.handler.client.CameraHandler;
 import Acrimony.module.impl.ghost.Reach;
+import Acrimony.module.impl.visual.CustomGui;
+import Acrimony.module.impl.visual.motionblur.CustomShaderGroup;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.gson.JsonSyntaxException;
@@ -163,7 +166,7 @@ implements IResourceManagerReloadListener {
     private double cameraZoom = 1.0;
     private double cameraYaw;
     private double cameraPitch;
-    private ShaderGroup theShaderGroup;
+    public ShaderGroup theShaderGroup;
     private static final ResourceLocation[] shaderResourceLocations;
     public static final int shaderCount;
     private int shaderIndex;
@@ -267,6 +270,14 @@ implements IResourceManagerReloadListener {
                 this.shaderIndex = shaderCount;
                 this.useShader = false;
             }
+        }
+    }
+
+    public void loadCustomShader() throws IOException {
+        if (OpenGlHelper.isFramebufferEnabled()) {
+            this.theShaderGroup = new CustomShaderGroup(this.mc.getTextureManager(), this.resourceManager, this.mc.getFramebuffer(), new ResourceLocation("zambo", "sucks"));
+            this.theShaderGroup.createBindFramebuffers(this.mc.displayWidth, this.mc.displayHeight);
+            this.useShader = true;
         }
     }
 
@@ -503,6 +514,10 @@ implements IResourceManagerReloadListener {
 
     private void hurtCameraEffect(float partialTicks) {
         if (this.mc.getRenderViewEntity() instanceof EntityLivingBase) {
+            CustomGui customGui = Acrimony.instance.getModuleManager().getModule(CustomGui.class);
+            if (customGui.isEnabled() && CustomGui.nohurtcam.isEnabled()) {
+                return;
+            }
             EntityLivingBase entitylivingbase = (EntityLivingBase)this.mc.getRenderViewEntity();
             float f = (float)entitylivingbase.hurtTime - partialTicks;
             if (entitylivingbase.getHealth() <= 0.0f) {
@@ -1357,6 +1372,7 @@ implements IResourceManagerReloadListener {
             this.mc.mcProfiler.endStartSection("forge_render_last");
             Reflector.callVoid(Reflector.ForgeHooksClient_dispatchRenderLast, renderglobal, Float.valueOf(partialTicks));
         }
+        Acrimony.instance.getEventManager().post(new Alternative3DEvent(partialTicks));
         this.mc.mcProfiler.endStartSection("hand");
         Acrimony.instance.getEventManager().post(new Render3DEvent(partialTicks));
         if (this.renderHand && !Shaders.isShadowPass) {

@@ -56,7 +56,7 @@ extends ViaBukkitListener {
                 packet.write(Type.VAR_INT, player.getEntityId());
                 byte bitmask = 0;
                 if (player.getFireTicks() > 0) {
-                    bitmask = (byte)(bitmask | 1);
+                    bitmask = (byte)(bitmask | '\u0001');
                 }
                 if (player.isSneaking()) {
                     bitmask = (byte)(bitmask | 2);

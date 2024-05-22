@@ -48,7 +48,7 @@ extends ConnectionHandler {
         byte states = 0;
         String type = blockData.getValue("type");
         if (type.equals("left")) {
-            states = (byte)(states | 1);
+            states = (byte)(states | '\u0001');
         }
         if (type.equals("right")) {
             states = (byte)(states | 2);

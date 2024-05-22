@@ -24,7 +24,7 @@ import org.lwjgl.input.Keyboard;
 
 public class Longjump
 extends Module {
-    public final ModeSetting mode = new ModeSetting("Mode", "Vanilla", "Vanilla", "Self damage", "Hypixel FB");
+    public final ModeSetting mode = new ModeSetting("Mode", "Vanilla", "Vanilla", "Self damage", "Hypixel FB", "Hypixel Boost");
     private final DoubleSetting motionY = new DoubleSetting("Motion Y", () -> this.mode.is("Vanilla"), 0.4, 0.1, 9.0, 0.1);
     private final DoubleSetting speed = new DoubleSetting("Speed", () -> this.mode.is("Vanilla"), 1.0, 0.1, 9.0, 0.1);
     private final BooleanSetting stopMovement = new BooleanSetting("Stop movement", () -> this.mode.is("Self damage"), false);
@@ -51,7 +51,8 @@ extends Module {
         this.started = false;
         this.velocityY = -1.0;
         switch (this.mode.getMode()) {
-            case "Self damage": {
+            case "Self damage": 
+            case "Hypixel Jump": {
                 if (Longjump.mc.thePlayer.onGround) break;
                 this.counter = 3;
             }
@@ -95,29 +96,17 @@ extends Module {
                     if (this.ticks > this.waitingTicks.getValue() && this.velocityY != -1.0) {
                         Longjump.mc.thePlayer.motionY += this.afterVelocityYBoost.getValue();
                     }
-                    if (this.ticks > 2 && this.ticks < this.waitingTicks.getValue()) {
-                        Acrimony.instance.getPacketBlinkHandler().startBlinking();
-                    } else {
-                        Acrimony.instance.getPacketBlinkHandler().stopBlinking();
-                    }
                     if (!Longjump.mc.thePlayer.onGround) break;
                     this.setEnabled(false);
                     break;
                 }
-                if (Longjump.mc.thePlayer.onGround) {
-                    Longjump.mc.thePlayer.jump();
-                    ++this.counter;
-                    if (this.counter > 3) {
-                        this.started = true;
-                        Longjump.mc.gameSettings.keyBindForward.pressed = Keyboard.isKeyDown(Longjump.mc.gameSettings.keyBindForward.getKeyCode());
-                        return;
-                    }
-                }
-                if (Longjump.mc.thePlayer.motionY > 0.3) {
-                    Acrimony.instance.getPacketBlinkHandler().stopBlinking();
-                    break;
-                }
-                Acrimony.instance.getPacketBlinkHandler().startBlinking();
+                if (!Longjump.mc.thePlayer.onGround) break;
+                Longjump.mc.thePlayer.jump();
+                ++this.counter;
+                if (this.counter <= 3) break;
+                this.started = true;
+                Longjump.mc.gameSettings.keyBindForward.pressed = Keyboard.isKeyDown(Longjump.mc.gameSettings.keyBindForward.getKeyCode());
+                return;
             }
         }
     }

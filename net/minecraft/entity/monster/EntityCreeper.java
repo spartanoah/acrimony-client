@@ -90,7 +90,7 @@ extends EntityMob {
     @Override
     public void readEntityFromNBT(NBTTagCompound tagCompund) {
         super.readEntityFromNBT(tagCompund);
-        this.dataWatcher.updateObject(17, (byte)(tagCompund.getBoolean("powered") ? 1 : 0));
+        this.dataWatcher.updateObject(17, (byte)(tagCompund.getBoolean("powered") ? (char)'\u0001' : '\u0000'));
         if (tagCompund.hasKey("Fuse", 99)) {
             this.fuseTime = tagCompund.getShort("Fuse");
         }

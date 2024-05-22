@@ -613,7 +613,7 @@ implements ICommandSender {
     }
 
     public void setSilent(boolean isSilent) {
-        this.dataWatcher.updateObject(4, (byte)(isSilent ? 1 : 0));
+        this.dataWatcher.updateObject(4, (byte)(isSilent ? (char)'\u0001' : '\u0000'));
     }
 
     protected boolean canTriggerWalking() {
@@ -1266,7 +1266,7 @@ implements ICommandSender {
                 BlockPattern.PatternHelper blockpattern$patternhelper = Blocks.portal.func_181089_f(this.worldObj, p_181015_1_);
                 double d0 = blockpattern$patternhelper.getFinger().getAxis() == EnumFacing.Axis.X ? (double)blockpattern$patternhelper.func_181117_a().getZ() : (double)blockpattern$patternhelper.func_181117_a().getX();
                 double d1 = blockpattern$patternhelper.getFinger().getAxis() == EnumFacing.Axis.X ? this.posZ : this.posX;
-                d1 = Math.abs(MathHelper.func_181160_c(d1 - (double)(blockpattern$patternhelper.getFinger().rotateY().getAxisDirection() == EnumFacing.AxisDirection.NEGATIVE ? 1 : 0), d0, d0 - (double)blockpattern$patternhelper.func_181118_d()));
+                d1 = Math.abs(MathHelper.func_181160_c(d1 - (double)(blockpattern$patternhelper.getFinger().rotateY().getAxisDirection() == EnumFacing.AxisDirection.NEGATIVE ? (char)'\u0001' : '\u0000'), d0, d0 - (double)blockpattern$patternhelper.func_181118_d()));
                 double d2 = MathHelper.func_181160_c(this.posY - 1.0, blockpattern$patternhelper.func_181117_a().getY(), blockpattern$patternhelper.func_181117_a().getY() - blockpattern$patternhelper.func_181119_e());
                 this.field_181017_ao = new Vec3(d1, d2, 0.0);
                 this.field_181018_ap = blockpattern$patternhelper.getFinger();
@@ -1616,7 +1616,7 @@ implements ICommandSender {
     }
 
     public void setAlwaysRenderNameTag(boolean alwaysRenderNameTag) {
-        this.dataWatcher.updateObject(3, (byte)(alwaysRenderNameTag ? 1 : 0));
+        this.dataWatcher.updateObject(3, (byte)(alwaysRenderNameTag ? (char)'\u0001' : '\u0000'));
     }
 
     public boolean getAlwaysRenderNameTag() {

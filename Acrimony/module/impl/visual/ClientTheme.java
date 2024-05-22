@@ -60,14 +60,14 @@ extends Module {
                 return ColorUtil.getColor(new Color(145, 33, 33), new Color(255, 72, 72), this.fadespeed.getValue(), offset);
             }
             case "Blue": {
-                color1 = new Color(25, 25, 25);
-                color2 = new Color(0, 35, 206);
+                color1 = new Color(0, 35, 206);
+                color2 = new Color(25, 25, 25);
                 return ColorUtil.getColor(new Color(25, 25, 25), new Color(0, 35, 206), this.fadespeed.getValue(), offset);
             }
             case "Red": {
                 color1 = new Color(255, 35, 35);
                 color2 = new Color(255, 226, 226);
-                return ColorUtil.getColor(new Color(255, 35, 35), new Color(255, 226, 226), this.fadespeed.getValue(), offset);
+                return ColorUtil.getColor(new Color(255, 35, 35), new Color(255, 226, 226), new Color(145, 33, 33), this.fadespeed.getValue(), offset);
             }
             case "Pink": {
                 color1 = new Color(255, 112, 236);
@@ -75,8 +75,8 @@ extends Module {
                 return ColorUtil.getColor(new Color(255, 112, 236), new Color(25, 25, 25), this.fadespeed.getValue(), offset);
             }
             case "Coral": {
-                color1 = new Color(25, 25, 25);
-                color2 = new Color(211, 45, 30);
+                color1 = new Color(211, 45, 30);
+                color2 = new Color(25, 25, 25);
                 return ColorUtil.getColor(new Color(25, 25, 25), new Color(211, 45, 30), this.fadespeed.getValue(), offset);
             }
             case "Chocolate": {

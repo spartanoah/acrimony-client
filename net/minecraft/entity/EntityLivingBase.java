@@ -96,6 +96,7 @@ extends Entity {
     public float rotationYawHead;
     public float prevRotationYawHead;
     public float jumpMovementFactor = 0.02f;
+    public int offGroundTicks;
     protected EntityPlayer attackingPlayer;
     protected int recentlyHit;
     protected boolean dead;
@@ -441,7 +442,7 @@ extends Entity {
             this.setInvisible(false);
         } else {
             int i = PotionHelper.calcPotionLiquidColor(this.activePotionsMap.values());
-            this.dataWatcher.updateObject(8, (byte)(PotionHelper.getAreAmbient(this.activePotionsMap.values()) ? 1 : 0));
+            this.dataWatcher.updateObject(8, (byte)(PotionHelper.getAreAmbient(this.activePotionsMap.values()) ? (char)'\u0001' : '\u0000'));
             this.dataWatcher.updateObject(7, i);
             this.setInvisible(this.isPotionActive(Potion.invisibility.id));
         }
@@ -1286,6 +1287,7 @@ extends Entity {
         }
         this.worldObj.theProfiler.endSection();
         this.worldObj.theProfiler.startSection("jump");
+        ++this.offGroundTicks;
         if (this.isJumping) {
             if (this.isInWater()) {
                 this.updateAITick();
@@ -1294,6 +1296,7 @@ extends Entity {
             } else if (this.onGround && this.jumpTicks == 0) {
                 this.jump();
                 this.jumpTicks = 10;
+                this.offGroundTicks = 0;
             }
         } else {
             this.jumpTicks = 0;

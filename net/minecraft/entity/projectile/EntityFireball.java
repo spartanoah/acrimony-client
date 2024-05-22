@@ -181,7 +181,7 @@ extends Entity {
         tagCompound.setShort("zTile", (short)this.zTile);
         ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.inTile);
         tagCompound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
-        tagCompound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+        tagCompound.setByte("inGround", (byte)(this.inGround ? (char)'\u0001' : '\u0000'));
         tagCompound.setTag("direction", this.newDoubleNBTList(this.motionX, this.motionY, this.motionZ));
     }
 

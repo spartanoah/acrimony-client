@@ -84,7 +84,7 @@ extends ConnectionHandler {
     private static short getStates(StairData stairData) {
         short s = 0;
         if (stairData.isBottom()) {
-            s = (short)(s | 1);
+            s = (short)(s | '\u0001');
         }
         s = (short)(s | stairData.getShape() << 1);
         s = (short)(s | stairData.getType() << 4);
@@ -100,7 +100,7 @@ extends ConnectionHandler {
         }
         short s = 0;
         if (stairData.isBottom()) {
-            s = (short)(s | 1);
+            s = (short)(s | '\u0001');
         }
         s = (short)(s | this.getShape(user, position, stairData) << 1);
         s = (short)(s | stairData.getType() << 4);

@@ -158,7 +158,7 @@ extends Module {
     }
 
     private boolean isSafe() {
-        return WorldUtil.isBlockUnder() || !Antivoid.mc.getNetHandler().doneLoadingTerrain || Antivoid.mc.thePlayer.ticksExisted < 100 || this.flyModule.isEnabled() || this.longjumpModule.isEnabled();
+        return WorldUtil.isBlockUnder() || this.flyModule.isEnabled() || this.longjumpModule.isEnabled();
     }
 
     public boolean isBlinking() {

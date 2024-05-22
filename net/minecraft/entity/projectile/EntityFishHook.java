@@ -366,7 +366,7 @@ extends Entity {
         ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.inTile);
         tagCompound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
         tagCompound.setByte("shake", (byte)this.shake);
-        tagCompound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+        tagCompound.setByte("inGround", (byte)(this.inGround ? (char)'\u0001' : '\u0000'));
     }
 
     @Override

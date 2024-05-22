@@ -105,7 +105,7 @@ public class ShaderGroup {
         IOUtils.closeQuietly(inputstream);
     }
 
-    private void initTarget(JsonElement p_148027_1_) throws JsonException {
+    protected void initTarget(JsonElement p_148027_1_) throws JsonException {
         if (JsonUtils.isString(p_148027_1_)) {
             this.addFramebuffer(p_148027_1_.getAsString(), this.mainFramebufferWidth, this.mainFramebufferHeight);
         } else {
@@ -120,7 +120,7 @@ public class ShaderGroup {
         }
     }
 
-    private void parsePass(TextureManager p_152764_1_, JsonElement p_152764_2_) throws JsonException, IOException {
+    protected void parsePass(TextureManager p_152764_1_, JsonElement p_152764_2_) throws JsonException, IOException {
         JsonArray jsonarray1;
         JsonObject jsonobject = JsonUtils.getJsonObject(p_152764_2_, "pass");
         String s = JsonUtils.getString(jsonobject, "name");

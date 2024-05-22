@@ -231,7 +231,7 @@ ApplicationProtocolAccessor {
         Lock readerLock = context.ctxLock.readLock();
         readerLock.lock();
         try {
-            finalSsl = SSL.newSSL((long)context.ctx, (!context.isClient() ? 1 : 0) != 0);
+            finalSsl = SSL.newSSL((long)context.ctx, (!context.isClient() ? (char)'\u0001' : '\u0000') != '\u0000');
         } finally {
             readerLock.unlock();
         }

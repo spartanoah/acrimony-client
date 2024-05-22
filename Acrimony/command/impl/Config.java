@@ -4,6 +4,7 @@
 package Acrimony.command.impl;
 
 import Acrimony.Acrimony;
+import Acrimony.autoconfig.DownloadConfig;
 import Acrimony.command.Command;
 import Acrimony.ui.notification.Notification;
 import Acrimony.ui.notification.NotificationType;
@@ -36,11 +37,21 @@ extends Command {
                     Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.WARNING, "Config announcement", "Saved config as " + configName + " in game.", 3000L));
                     break;
                 }
-                case "list": {
-                    List<String> configList = Acrimony.instance.getFileSystem().getConfigList();
-                    StringBuilder message = new StringBuilder("Available configs:");
-                    LogUtil.addChatMessage("\\u001B[34m Acrimony: " + message.append(configList));
+                case "install": {
+                    DownloadConfig.downloadConfig(configName, DownloadConfig.repoOwner, DownloadConfig.repoName, DownloadConfig.downloadPath, DownloadConfig.token);
+                    System.out.println("testsss");
                 }
+            }
+        }
+        if (args[2].toLowerCase().equals("onlinelist")) {
+            List<String> fileList = DownloadConfig.getOnlineConfigList(DownloadConfig.repoOwner, DownloadConfig.repoName, DownloadConfig.token);
+            System.out.println(fileList);
+            if (fileList != null) {
+                for (String file : fileList) {
+                    LogUtil.addChatMessage("Acrimony: " + file);
+                }
+            } else {
+                Acrimony.instance.getNotificationHandler().postNotification(new Notification(NotificationType.WARNING, "Config announcement", "Error Fetching List of Online Configs", 3000L));
             }
         }
     }

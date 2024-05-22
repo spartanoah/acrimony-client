@@ -47,7 +47,7 @@ implements IMob {
     }
 
     public void setAttacking(boolean p_175454_1_) {
-        this.dataWatcher.updateObject(16, (byte)(p_175454_1_ ? 1 : 0));
+        this.dataWatcher.updateObject(16, (byte)(p_175454_1_ ? (char)'\u0001' : '\u0000'));
     }
 
     public int getFireballStrength() {

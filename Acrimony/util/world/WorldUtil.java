@@ -12,6 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
@@ -166,8 +167,12 @@ implements IMinecraft {
     }
 
     public static boolean isBlockUnder() {
-        for (int y = (int)WorldUtil.mc.thePlayer.posY; y >= 0; --y) {
-            if (WorldUtil.mc.theWorld.getBlockState(new BlockPos(WorldUtil.mc.thePlayer.posX, (double)y, WorldUtil.mc.thePlayer.posZ)).getBlock() instanceof BlockAir) continue;
+        if (WorldUtil.mc.thePlayer.posY < 0.0) {
+            return false;
+        }
+        for (int offset = 0; offset < (int)WorldUtil.mc.thePlayer.posY + 2; offset += 2) {
+            AxisAlignedBB bb = WorldUtil.mc.thePlayer.getEntityBoundingBox().offset(0.0, -offset, 0.0);
+            if (WorldUtil.mc.theWorld.getCollidingBoundingBoxes(WorldUtil.mc.thePlayer, bb).isEmpty()) continue;
             return true;
         }
         return false;

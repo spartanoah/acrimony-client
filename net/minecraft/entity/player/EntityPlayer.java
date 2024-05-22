@@ -5,6 +5,7 @@ package net.minecraft.entity.player;
 
 import Acrimony.Acrimony;
 import Acrimony.module.impl.ghost.KeepSprint;
+import Acrimony.util.waveycapes.sim.StickSimulation;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
@@ -101,6 +102,7 @@ extends EntityLivingBase {
     public double chasingPosX;
     public double chasingPosY;
     public double chasingPosZ;
+    public final StickSimulation stickSimulation = new StickSimulation();
     protected boolean sleeping;
     public BlockPos playerLocation;
     private int sleepTimer;
@@ -182,12 +184,53 @@ extends EntityLivingBase {
         }
     }
 
+    public void updateSimulation(EntityPlayer abstractClientPlayer, int partCount) {
+        int i;
+        boolean dirty = false;
+        if (this.stickSimulation.points.size() != partCount) {
+            this.stickSimulation.points.clear();
+            this.stickSimulation.sticks.clear();
+            for (i = 0; i < partCount; ++i) {
+                StickSimulation.Point point = new StickSimulation.Point();
+                point.position.y = -i;
+                point.locked = i == 0;
+                this.stickSimulation.points.add(point);
+                if (i <= 0) continue;
+                this.stickSimulation.sticks.add(new StickSimulation.Stick(this.stickSimulation.points.get(i - 1), point, 1.0f));
+            }
+            dirty = true;
+        }
+        if (dirty) {
+            for (i = 0; i < 10; ++i) {
+                this.simulate(abstractClientPlayer);
+            }
+        }
+    }
+
+    public void simulate(EntityPlayer abstractClientPlayer) {
+        if (this.stickSimulation.points.isEmpty()) {
+            return;
+        }
+        this.stickSimulation.points.get((int)0).prevPosition.copy(this.stickSimulation.points.get((int)0).position);
+        double d = abstractClientPlayer.chasingPosX - abstractClientPlayer.posX;
+        double m = abstractClientPlayer.chasingPosZ - abstractClientPlayer.posZ;
+        float n = abstractClientPlayer.prevRenderYawOffset + abstractClientPlayer.renderYawOffset - abstractClientPlayer.prevRenderYawOffset;
+        double o = MathHelper.sin(n * ((float)Math.PI / 180));
+        double p = -MathHelper.cos(n * ((float)Math.PI / 180));
+        float heightMul = 6.0f;
+        double fallHack = MathHelper.clamp_double((double)this.stickSimulation.points.get((int)0).position.y - abstractClientPlayer.posY * (double)heightMul, 0.0, 1.0);
+        this.stickSimulation.points.get((int)0).position.x = (float)((double)this.stickSimulation.points.get((int)0).position.x + (d * o + m * p + fallHack));
+        this.stickSimulation.points.get((int)0).position.y = (float)(abstractClientPlayer.posY * (double)heightMul + (double)(abstractClientPlayer.isSneaking() ? -4 : 0));
+        this.stickSimulation.simulate();
+    }
+
     public boolean isBlocking() {
         return this.isUsingItem() && this.itemInUse.getItem().getItemUseAction(this.itemInUse) == EnumAction.BLOCK;
     }
 
     @Override
     public void onUpdate() {
+        this.simulate(this);
         this.noClip = this.isSpectator();
         if (this.isSpectator()) {
             this.onGround = false;
@@ -1515,6 +1558,10 @@ extends EntityLivingBase {
     }
 
     public void setGameType(WorldSettings.GameType gameType) {
+    }
+
+    public String getName() {
+        return this.gameProfile.getName();
     }
 
     @Override

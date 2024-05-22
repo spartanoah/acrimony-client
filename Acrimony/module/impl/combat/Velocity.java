@@ -96,7 +96,7 @@ extends Module {
             }
             case "Hypixel": {
                 if (MovementUtil.isMoving() && !Velocity.mc.thePlayer.onGround) {
-                    this.ticks = 2;
+                    this.ticks = 3;
                     break;
                 }
                 event.setX(Velocity.mc.thePlayer.motionX);
@@ -210,9 +210,9 @@ extends Module {
             }
             case "Strafe": 
             case "Hypixel": {
-                if (this.ticks <= 0) break;
+                if (this.ticks <= 1) break;
                 --this.ticks;
-                if (this.ticks != 0 || !this.dmgBoost.isEnabled()) break;
+                if (this.ticks != 1 || !this.dmgBoost.isEnabled()) break;
                 MovementUtil.strafe(event);
                 break;
             }

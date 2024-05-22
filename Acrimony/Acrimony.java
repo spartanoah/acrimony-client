@@ -30,8 +30,8 @@ import net.viamcp.ViaMCP;
 public class Acrimony
 implements IMinecraft {
     public static final Acrimony instance = new Acrimony();
-    public final String name = "Acrimony";
-    public final String version = "v1.0.1";
+    public final String name = "AlzaDev";
+    public final String version = "b1";
     private EventManager eventManager;
     private ModuleManager moduleManager;
     private CommandManager commandManager;

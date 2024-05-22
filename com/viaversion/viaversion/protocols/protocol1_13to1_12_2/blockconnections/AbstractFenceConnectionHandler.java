@@ -46,7 +46,7 @@ extends ConnectionHandler {
     protected byte getStates(WrappedBlockData blockData) {
         byte states = 0;
         if (blockData.getValue("east").equals("true")) {
-            states = (byte)(states | 1);
+            states = (byte)(states | '\u0001');
         }
         if (blockData.getValue("north").equals("true")) {
             states = (byte)(states | 2);
@@ -65,7 +65,7 @@ extends ConnectionHandler {
         byte states = 0;
         boolean bl = pre1_12 = user.getProtocolInfo().getServerProtocolVersion() < ProtocolVersion.v1_12.getVersion();
         if (this.connects(BlockFace.EAST, this.getBlockData(user, position.getRelative(BlockFace.EAST)), pre1_12)) {
-            states = (byte)(states | 1);
+            states = (byte)(states | '\u0001');
         }
         if (this.connects(BlockFace.NORTH, this.getBlockData(user, position.getRelative(BlockFace.NORTH)), pre1_12)) {
             states = (byte)(states | 2);

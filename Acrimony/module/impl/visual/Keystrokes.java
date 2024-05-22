@@ -9,6 +9,7 @@ import Acrimony.module.AlignType;
 import Acrimony.module.Category;
 import Acrimony.module.HUDModule;
 import Acrimony.module.impl.visual.ClientTheme;
+import Acrimony.setting.impl.BooleanSetting;
 import Acrimony.setting.impl.ModeSetting;
 import Acrimony.util.animation.AnimationHolder;
 import Acrimony.util.animation.AnimationType;
@@ -23,6 +24,7 @@ import org.lwjgl.input.Keyboard;
 public class Keystrokes
 extends HUDModule {
     private final ModeSetting mode = new ModeSetting("Mode", "Future", "Future", "Blur", "Jello");
+    private final BooleanSetting blurbg = new BooleanSetting("Blur Background", () -> this.mode.is("Future"), false);
     private final ModeSetting font = FontUtil.getFontSetting();
     private final ArrayList<AnimationHolder<KeyBinding>> keys = new ArrayList();
     private boolean keysInitiated;
@@ -31,7 +33,7 @@ extends HUDModule {
 
     public Keystrokes() {
         super("Keystrokes", Category.VISUAL, 15.0, 35.0, 70, 70, AlignType.LEFT);
-        this.addSettings(this.mode, this.font);
+        this.addSettings(this.mode, this.blurbg, this.font);
     }
 
     @Override
@@ -85,6 +87,9 @@ extends HUDModule {
                             currentX = x;
                             currentY = y + (length + spacing) * 2;
                             totalLength = length * 3 + spacing * 2;
+                            if (this.blurbg.isEnabled()) {
+                                Acrimony.instance.blurHandler.blur((double)currentX, (double)currentY, (double)totalLength, (double)length, 0.0f);
+                            }
                             DrawUtil.drawRoundedRect(currentX, currentY, currentX + totalLength, currentY + length, 6.0, Integer.MIN_VALUE);
                             finalRenderX = currentX;
                             int finalRenderY = currentY;
@@ -97,6 +102,9 @@ extends HUDModule {
                         if (index == 1) {
                             currentX = x;
                             currentY = y + length + spacing;
+                        }
+                        if (this.blurbg.isEnabled()) {
+                            Acrimony.instance.blurHandler.blur((double)currentX, (double)currentY, (double)length, (double)length, 0.0f);
                         }
                         DrawUtil.drawRoundedRect(currentX, currentY, currentX + length, currentY + length, 6.0, Integer.MIN_VALUE);
                         int finalRenderX2 = currentX;

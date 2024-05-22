@@ -9,6 +9,7 @@ import Acrimony.setting.AbstractSetting;
 import Acrimony.setting.impl.BooleanSetting;
 import Acrimony.setting.impl.ColorSetting;
 import Acrimony.setting.impl.DoubleSetting;
+import Acrimony.setting.impl.EnumModeSetting;
 import Acrimony.setting.impl.IntegerSetting;
 import Acrimony.setting.impl.ModeSetting;
 import java.io.BufferedReader;
@@ -69,9 +70,14 @@ public class FileSystem {
                         toWrite.add("Setting:" + m.getName() + ":" + doubleSetting.getName() + ":" + doubleSetting.getValue());
                         continue;
                     }
-                    if (!(s instanceof IntegerSetting)) continue;
-                    IntegerSetting intSetting = (IntegerSetting)s;
-                    toWrite.add("Setting:" + m.getName() + ":" + intSetting.getName() + ":" + intSetting.getValue());
+                    if (s instanceof IntegerSetting) {
+                        IntegerSetting intSetting = (IntegerSetting)s;
+                        toWrite.add("Setting:" + m.getName() + ":" + intSetting.getName() + ":" + intSetting.getValue());
+                        continue;
+                    }
+                    if (!(s instanceof EnumModeSetting)) continue;
+                    EnumModeSetting enumModeSetting = (EnumModeSetting)s;
+                    toWrite.add("Setting:" + m.getName() + ":" + enumModeSetting.getName() + ":" + enumModeSetting.getMode());
                 }
             }
             for (String s : toWrite) {
@@ -147,9 +153,13 @@ public class FileSystem {
                                 doubleSetting.setValue(Double.parseDouble(infos[3]));
                                 break;
                             }
-                            if (!(setting instanceof IntegerSetting)) break;
-                            IntegerSetting intSetting = (IntegerSetting)setting;
-                            intSetting.setValue(Integer.parseInt(infos[3]));
+                            if (setting instanceof IntegerSetting) {
+                                IntegerSetting intSetting = (IntegerSetting)setting;
+                                intSetting.setValue(Integer.parseInt(infos[3]));
+                                break;
+                            }
+                            if (!(setting instanceof EnumModeSetting)) break;
+                            EnumModeSetting enumModeSetting = (EnumModeSetting)setting;
                         }
                     }
                 }

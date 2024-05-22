@@ -528,6 +528,11 @@ public class Block {
         return f < 0.0f ? 0.0f : (!playerIn.canHarvestBlock(this) ? playerIn.getToolDigEfficiency(this) / f / 100.0f : playerIn.getToolDigEfficiency(this) / f / 30.0f);
     }
 
+    public float getPlayerRelativeBlockHardness(EntityPlayer playerIn) {
+        float f = this.getBlockHardness(playerIn.worldObj, playerIn.getPosition());
+        return f < 0.0f ? 0.0f : (!playerIn.canHarvestBlock(this) ? playerIn.getToolDigEfficiency(this) / f / 100.0f : playerIn.getToolDigEfficiency(this) / f / 30.0f);
+    }
+
     public final void dropBlockAsItem(World worldIn, BlockPos pos, IBlockState state, int forture) {
         this.dropBlockAsItemWithChance(worldIn, pos, state, 1.0f, forture);
     }

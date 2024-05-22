@@ -36,7 +36,7 @@ import net.minecraft.util.MathHelper;
 
 public class Fly
 extends Module {
-    private final ModeSetting mode = new ModeSetting("Mode", "Vanilla", "Vanilla", "Collision", "NCP", "Blocksmc", "Velocity", "Hypixel");
+    private final ModeSetting mode = new ModeSetting("Mode", "Vanilla", "Vanilla", "Collision", "NCP", "Blocksmc", "Velocity");
     private final ModeSetting vanillaMode = new ModeSetting("Vanilla Mode", () -> this.mode.is("Vanilla"), "Motion", "Motion", "Creative");
     private final DoubleSetting vanillaSpeed = new DoubleSetting("Vanilla speed", () -> this.mode.is("Vanilla") && this.vanillaMode.is("Motion"), 2.0, 0.2, 9.0, 0.2);
     private final DoubleSetting vanillaVerticalSpeed = new DoubleSetting("Vanilla vertical speed", () -> this.mode.is("Vanilla") && this.vanillaMode.is("Motion"), 2.0, 0.2, 9.0, 0.2);

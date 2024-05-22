@@ -614,7 +614,7 @@ public final class PlatformDependent {
 
     static {
         if (logger.isDebugEnabled()) {
-            logger.debug("-Dio.netty.noPreferDirect: {}", (Object)(!DIRECT_BUFFER_PREFERRED ? 1 : 0));
+            logger.debug("-Dio.netty.noPreferDirect: {}", (Object)(!DIRECT_BUFFER_PREFERRED ? (char)'\u0001' : '\u0000'));
         }
         if (!PlatformDependent.hasUnsafe() && !PlatformDependent.isAndroid()) {
             logger.info("Your platform does not provide complete low-level API for accessing direct buffers reliably. Unless explicitly requested, heap buffer will always be preferred to avoid potential system unstability.");

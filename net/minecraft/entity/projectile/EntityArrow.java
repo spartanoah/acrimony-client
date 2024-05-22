@@ -335,7 +335,7 @@ implements IProjectile {
         tagCompound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
         tagCompound.setByte("inData", (byte)this.inData);
         tagCompound.setByte("shake", (byte)this.arrowShake);
-        tagCompound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+        tagCompound.setByte("inGround", (byte)(this.inGround ? (char)'\u0001' : '\u0000'));
         tagCompound.setByte("pickup", (byte)this.canBePickedUp);
         tagCompound.setDouble("damage", this.damage);
     }

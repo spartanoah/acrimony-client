@@ -57,7 +57,7 @@ extends ConnectionHandler {
     private static byte getStates(WrappedBlockData blockData) {
         byte states = 0;
         if (blockData.getValue("east").equals("true")) {
-            states = (byte)(states | 1);
+            states = (byte)(states | '\u0001');
         }
         if (blockData.getValue("north").equals("true")) {
             states = (byte)(states | 2);
@@ -78,7 +78,7 @@ extends ConnectionHandler {
     public int connect(UserConnection user, Position position, int blockState) {
         byte states = 0;
         if (FLAMMABLE_BLOCKS.contains(this.getBlockData(user, position.getRelative(BlockFace.EAST)))) {
-            states = (byte)(states | 1);
+            states = (byte)(states | '\u0001');
         }
         if (FLAMMABLE_BLOCKS.contains(this.getBlockData(user, position.getRelative(BlockFace.NORTH)))) {
             states = (byte)(states | 2);

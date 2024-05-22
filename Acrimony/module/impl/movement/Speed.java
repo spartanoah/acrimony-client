@@ -18,6 +18,7 @@ import Acrimony.setting.impl.BooleanSetting;
 import Acrimony.setting.impl.DoubleSetting;
 import Acrimony.setting.impl.IntegerSetting;
 import Acrimony.setting.impl.ModeSetting;
+import Acrimony.util.misc.LogUtil;
 import Acrimony.util.network.PacketUtil;
 import Acrimony.util.player.MovementUtil;
 import Acrimony.util.player.PlayerUtil;
@@ -45,7 +46,7 @@ extends Module {
     private final BooleanSetting autoJump = new BooleanSetting("Autojump", () -> this.mode.is("Vanilla") || this.mode.is("Strafe"), true);
     private final ModeSetting ncpMode = new ModeSetting("NCP Mode", () -> this.mode.is("NCP"), "Hop", "Hop", "Updated Hop");
     private final BooleanSetting damageBoost = new BooleanSetting("Damage Boost", () -> this.mode.is("NCP") && this.ncpMode.is("Updated Hop"), true);
-    public final ModeSetting watchdogMode = new ModeSetting("Watchdog Mode", () -> this.mode.is("Watchdog"), "Strafe", "Strafe", "Semi-Strafe", "Strafeless", "Ground");
+    public final ModeSetting watchdogMode = new ModeSetting("Watchdog Mode", () -> this.mode.is("Watchdog"), "Strafe", "Strafe", "Semi-Strafe", "Strafeless", "Ground", "Fast Fall");
     private final BooleanSetting fast = new BooleanSetting("Fast", () -> this.mode.is("Watchdog") && (this.watchdogMode.is("Strafe") || this.watchdogMode.is("Strafeless")), true);
     private final DoubleSetting attributeSpeedOffground = new DoubleSetting("Attribute speed offground", () -> this.mode.is("Watchdog") && this.watchdogMode.is("Strafe"), 0.023, 0.02, 0.026, 0.001);
     private final DoubleSetting mult = new DoubleSetting("Mult", () -> this.mode.is("Watchdog") && this.watchdogMode.is("Strafeless") && this.fast.isEnabled(), 1.24, 1.0, 1.3, 0.005);
@@ -93,6 +94,10 @@ extends Module {
     private final ArrayList<BlockPos> barriers = new ArrayList();
     private float lastForward;
     private float lastStrafe;
+    private double newValue;
+    private boolean shouldStart;
+    private boolean flagged;
+    private int fastTicks;
 
     public Speed() {
         super("Speed", Category.MOVEMENT);
@@ -123,12 +128,15 @@ extends Module {
         this.lastForward = Speed.mc.thePlayer.moveForward;
         this.lastStrafe = Speed.mc.thePlayer.moveStrafing;
         this.oldSlot = Speed.mc.thePlayer.inventory.currentItem;
+        this.fastTicks = 0;
         this.wasCollided = false;
     }
 
     @Override
     public void onDisable() {
         Speed.mc.timer.timerSpeed = 1.0f;
+        this.shouldStart = false;
+        this.fastTicks = 0;
         switch (this.mode.getMode()) {
             case "Vulcan": {
                 Speed.mc.thePlayer.inventory.currentItem = this.oldSlot;
@@ -203,6 +211,10 @@ extends Module {
 
     @Listener
     public void onUpdate(UpdateEvent event) {
+        ++this.offGroundTicks;
+        if (Speed.mc.thePlayer.onGround) {
+            this.offGroundTicks = 0;
+        }
         switch (this.mode.getMode()) {
             case "Vulcan": {
                 for (int i = 8; i >= 0; --i) {
@@ -402,6 +414,21 @@ extends Module {
                         }
                         this.lastForward = forward;
                         this.lastStrafe = strafe;
+                        break;
+                    }
+                    case "Fast Fall": {
+                        ++this.fastTicks;
+                        if (!(!MovementUtil.isMoving() || MovementUtil.isStrafing() || this.fastTicks <= 20 || this.shouldStart || Speed.mc.thePlayer.isCollided || Speed.mc.thePlayer.isCollidedVertically)) {
+                            this.shouldStart = true;
+                        }
+                        if (!Speed.mc.thePlayer.onGround) break;
+                        Speed.mc.thePlayer.motionY = 0.42f;
+                        event.setY(0.42f);
+                        if (Speed.mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                            MovementUtil.strafeNoTargetStrafe(event, 0.59 - Math.random() * 0.001 + (double)MovementUtil.getSpeedAmplifier() * 0.08);
+                            break;
+                        }
+                        MovementUtil.strafeNoTargetStrafe(event, 0.52 - Math.random() * 0.001);
                         break;
                     }
                     case "Ground": {
@@ -621,6 +648,19 @@ extends Module {
                 event.setYaw(direction);
             }
         }
+        if (this.watchdogMode.is("Fast Fall")) {
+            if (this.shouldStart) {
+                LogUtil.addChatMessage(String.valueOf(Speed.mc.thePlayer.offGroundTicks));
+                if (this.ticks == 3) {
+                    Speed.mc.thePlayer.motionY -= 0.02;
+                } else if (this.ticks != 6 && this.ticks == 9) {
+                    this.ticks = 0;
+                }
+                ++this.ticks;
+            } else {
+                this.ticks = 0;
+            }
+        }
         this.takingVelocity = false;
         ++this.ticksSinceVelocity;
     }
@@ -639,6 +679,9 @@ extends Module {
 
     @Listener
     public void onReceive(PacketReceiveEvent event) {
+        if (event.getPacket() instanceof S08PacketPlayerPosLook && this.watchdogMode.is("Fast Fall") && !this.flagged) {
+            this.flagged = true;
+        }
         if (event.getPacket() instanceof S12PacketEntityVelocity) {
             S12PacketEntityVelocity packet = (S12PacketEntityVelocity)event.getPacket();
             if (Speed.mc.thePlayer.getEntityId() == packet.getEntityID()) {

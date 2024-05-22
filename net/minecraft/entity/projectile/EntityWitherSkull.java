@@ -106,7 +106,7 @@ extends EntityFireball {
     }
 
     public void setInvulnerable(boolean invulnerable) {
-        this.dataWatcher.updateObject(10, (byte)(invulnerable ? 1 : 0));
+        this.dataWatcher.updateObject(10, (byte)(invulnerable ? (char)'\u0001' : '\u0000'));
     }
 }
 

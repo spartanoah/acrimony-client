@@ -6,6 +6,7 @@ package net.minecraft.client.gui;
 import Acrimony.Acrimony;
 import Acrimony.event.impl.Render2DEvent;
 import Acrimony.event.impl.RenderEvent;
+import Acrimony.module.impl.visual.HUD;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -108,7 +109,6 @@ extends Gui {
 
     public void renderGameOverlay(float partialTicks) {
         ScoreObjective scoreobjective1;
-        int i1;
         float f;
         ScaledResolution scaledresolution = new ScaledResolution(this.mc);
         int i = scaledresolution.getScaledWidth();
@@ -238,9 +238,6 @@ extends Gui {
         Scoreboard scoreboard = this.mc.theWorld.getScoreboard();
         ScoreObjective scoreobjective = null;
         ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(this.mc.thePlayer.getCommandSenderName());
-        if (scoreplayerteam != null && (i1 = scoreplayerteam.getChatFormat().getColorIndex()) >= 0) {
-            scoreobjective = scoreboard.getObjectiveInDisplaySlot(3 + i1);
-        }
         ScoreObjective scoreObjective = scoreobjective1 = scoreobjective != null ? scoreobjective : scoreboard.getObjectiveInDisplaySlot(1);
         if (scoreobjective1 != null) {
             this.renderScoreboard(scoreobjective1, scaledresolution);
@@ -413,7 +410,7 @@ extends Gui {
             i = Math.max(i, this.getFontRenderer().getStringWidth(s));
         }
         int i1 = collection.size() * this.getFontRenderer().FONT_HEIGHT;
-        int j1 = p_180475_2_.getScaledHeight() / 2 + i1 / 3;
+        int j1 = (int)((float)(p_180475_2_.getScaledHeight() / 2 + i1 / 3) + HUD.y - 165.0f);
         int k1 = 3;
         int l1 = p_180475_2_.getScaledWidth() - i - k1;
         int j = 0;
@@ -425,7 +422,6 @@ extends Gui {
             int l = p_180475_2_.getScaledWidth() - k1 + 2;
             GuiIngame.drawRect(l1 - 2, k, l, k + this.getFontRenderer().FONT_HEIGHT, 0x50000000);
             this.getFontRenderer().drawString(s1, l1, k, 0x20FFFFFF);
-            this.getFontRenderer().drawString(s2, l - this.getFontRenderer().getStringWidth(s2), k, 0x20FFFFFF);
             if (j != collection.size()) continue;
             String s3 = p_180475_1_.getDisplayName();
             GuiIngame.drawRect(l1 - 2, k - this.getFontRenderer().FONT_HEIGHT - 1, l, k - 1, 0x60000000);

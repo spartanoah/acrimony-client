@@ -39,7 +39,7 @@ extends ConnectionHandler {
     private static byte getStates(WrappedBlockData blockData) {
         byte b = 0;
         if (blockData.getValue("attached").equals("true")) {
-            b = (byte)(b | 1);
+            b = (byte)(b | '\u0001');
         }
         if (blockData.getValue("disarmed").equals("true")) {
             b = (byte)(b | 2);
@@ -71,7 +71,7 @@ extends ConnectionHandler {
         }
         byte b = 0;
         if (tripwireData.isAttached()) {
-            b = (byte)(b | 1);
+            b = (byte)(b | '\u0001');
         }
         if (tripwireData.isDisarmed()) {
             b = (byte)(b | 2);

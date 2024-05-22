@@ -3,6 +3,8 @@
  */
 package net.minecraft.client.renderer.entity;
 
+import Acrimony.module.impl.visual.CustomGui;
+import Acrimony.util.render.ItemUtil;
 import java.util.Random;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -71,6 +73,10 @@ extends Render<EntityItem> {
 
     @Override
     public void doRender(EntityItem entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        if (CustomGui.itemphysics.isEnabled()) {
+            ItemUtil.doRenderItemPhysic(entity, x, y, z, entityYaw, partialTicks);
+            return;
+        }
         ItemStack itemstack = entity.getEntityItem();
         this.field_177079_e.setSeed(187L);
         boolean flag = false;

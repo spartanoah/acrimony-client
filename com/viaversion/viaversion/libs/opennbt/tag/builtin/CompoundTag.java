@@ -186,7 +186,7 @@ implements Iterable<Map.Entry<String, Tag>> {
     }
 
     public void putBoolean(String tagName, boolean value) {
-        this.value.put(tagName, new ByteTag((byte)(value ? 1 : 0)));
+        this.value.put(tagName, new ByteTag((byte)(value ? (char)'\u0001' : '\u0000')));
     }
 
     public void putAll(CompoundTag compoundTag) {

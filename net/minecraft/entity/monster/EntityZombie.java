@@ -140,7 +140,7 @@ extends EntityMob {
     }
 
     public void setChild(boolean childZombie) {
-        this.getDataWatcher().updateObject(12, (byte)(childZombie ? 1 : 0));
+        this.getDataWatcher().updateObject(12, (byte)(childZombie ? (char)'\u0001' : '\u0000'));
         if (this.worldObj != null && !this.worldObj.isRemote) {
             IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
             iattributeinstance.removeModifier(babySpeedBoostModifier);
@@ -156,7 +156,7 @@ extends EntityMob {
     }
 
     public void setVillager(boolean villager) {
-        this.getDataWatcher().updateObject(13, (byte)(villager ? 1 : 0));
+        this.getDataWatcher().updateObject(13, (byte)(villager ? (char)'\u0001' : '\u0000'));
     }
 
     @Override

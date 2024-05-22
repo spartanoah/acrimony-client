@@ -25,7 +25,7 @@ implements Packet<INetHandlerPlayClient> {
         this.effectId = (byte)(effect.getPotionID() & 0xFF);
         this.amplifier = (byte)(effect.getAmplifier() & 0xFF);
         this.duration = effect.getDuration() > Short.MAX_VALUE ? Short.MAX_VALUE : effect.getDuration();
-        this.hideParticles = (byte)(effect.getIsShowParticles() ? 1 : 0);
+        this.hideParticles = (byte)(effect.getIsShowParticles() ? (char)'\u0001' : '\u0000');
     }
 
     @Override

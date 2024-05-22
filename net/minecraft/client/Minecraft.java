@@ -10,6 +10,7 @@ import Acrimony.module.impl.combat.Killaura;
 import Acrimony.module.impl.combat.Tickbase;
 import Acrimony.module.impl.ghost.DelayRemover;
 import Acrimony.ui.menu.AcrimonyMenu;
+import Acrimony.util.misc.DeltaTime;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -296,6 +297,7 @@ IPlayerUsage {
     int fpsCounter;
     long prevFrameTime = -1L;
     private String debugProfilerName = "root";
+    private long lastFrame = this.getTime();
 
     public Minecraft(GameConfiguration gameConfig) {
         theMinecraft = this;
@@ -808,10 +810,18 @@ IPlayerUsage {
         System.gc();
     }
 
+    private long getTime() {
+        return Sys.getTime() * 1000L / Sys.getTimerResolution();
+    }
+
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     private void runGameLoop() throws IOException {
+        long currentTime = this.getTime();
+        int deltaTime = (int)(currentTime - this.lastFrame);
+        this.lastFrame = currentTime;
+        DeltaTime.setDeltaTime(deltaTime);
         long i = System.nanoTime();
         this.mcProfiler.startSection("root");
         if (Display.isCreated() && Display.isCloseRequested()) {

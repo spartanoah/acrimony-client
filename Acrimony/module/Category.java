@@ -8,9 +8,9 @@ public enum Category {
     MOVEMENT,
     PLAYER,
     VISUAL,
-    MISC,
     GHOST,
-    EXPLOIT;
+    EXPLOIT,
+    CONFIG;
 
 }
 

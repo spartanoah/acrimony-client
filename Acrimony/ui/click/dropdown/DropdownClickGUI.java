@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ChatAllowedCharacters;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -38,7 +37,6 @@ import org.lwjgl.opengl.GL11;
 
 public class DropdownClickGUI
 extends GuiScreen {
-    private int guiTopOffset;
     private final ClickGuiModule module;
     private AcrimonyFont icons;
     private ClientTheme theme;
@@ -63,6 +61,7 @@ extends GuiScreen {
     private Module keyChangeModule;
     public float alp;
     private int scrollY;
+    private float targetScrollY = 0.0f;
 
     public DropdownClickGUI(ClickGuiModule module) {
         this.module = module;
@@ -80,21 +79,19 @@ extends GuiScreen {
     public void initGui() {
         this.categories.forEach(c -> c.getModules().forEach(m -> m.updateState()));
         this.scrollY = 0;
-    }
-
-    public void setGuiTop(int guiTop) {
-        this.guiTopOffset = guiTop;
+        this.targetScrollY = 0.0f;
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        float offsetYDelta = (this.targetScrollY - (float)this.scrollY) * 0.1f;
+        this.scrollY += (int)offsetYDelta;
         GL11.glTranslatef(0.0f, this.scrollY, 0.0f);
         this.theme = Acrimony.instance.getModuleManager().getModule(ClientTheme.class);
-        ScaledResolution sr = new ScaledResolution(this.mc);
         AcrimonyFont fr = Acrimony.instance.getFontManager().getSfpro();
         AcrimonyFont frs = Acrimony.instance.getFontManager().getSfprosmall();
         AcrimonyFont frr = Acrimony.instance.getFontManager().getSfprobold22();
-        this.icons = Acrimony.instance.getFontManager().getIcon();
+        this.icons = Acrimony.instance.getFontManager().getIconregular();
         for (CategoryHolder category : this.categories) {
             if (!category.isShown()) continue;
             if (category.isHolded()) {
@@ -109,6 +106,34 @@ extends GuiScreen {
             float categorywidth = fr.getStringWidth(categoryName);
             float categoryX = (float)x + (120.0f - categorywidth) / 2.0f;
             frr.drawStringWithShadow(categoryName, categoryX - 5.0f, y + 5, -1);
+            if (category.getCategory() == Category.COMBAT) {
+                DrawUtil.drawOutlinedRoundedRect((double)x + 0.5, (double)y + 1.5, 18.0, 14.5, 14.0, 4.0f, 0x20000000);
+                this.icons.drawStringWithShadow("c", x + 4, y + 6, -1);
+            }
+            if (category.getCategory() == Category.MOVEMENT) {
+                DrawUtil.drawOutlinedRoundedRect((double)x + 0.5, (double)y + 1.5, 18.0, 14.5, 14.0, 4.0f, 0x20000000);
+                this.icons.drawStringWithShadow("f", x + 4, y + 6, -1);
+            }
+            if (category.getCategory() == Category.PLAYER) {
+                DrawUtil.drawOutlinedRoundedRect((double)x + 0.5, (double)y + 1.5, 18.0, 14.5, 14.0, 4.0f, 0x20000000);
+                this.icons.drawStringWithShadow("e", x + 5, y + 6, -1);
+            }
+            if (category.getCategory() == Category.EXPLOIT) {
+                DrawUtil.drawOutlinedRoundedRect((double)x + 0.5, (double)y + 1.5, 18.0, 14.5, 14.0, 4.0f, 0x20000000);
+                this.icons.drawStringWithShadow("s", x + 4, y + 6, -1);
+            }
+            if (category.getCategory() == Category.VISUAL) {
+                DrawUtil.drawOutlinedRoundedRect((double)x + 0.5, (double)y + 1.5, 18.0, 14.5, 14.0, 4.0f, 0x20000000);
+                this.icons.drawStringWithShadow("d", x + 4, y + 6, -1);
+            }
+            if (category.getCategory() == Category.GHOST) {
+                DrawUtil.drawOutlinedRoundedRect((double)x + 0.5, (double)y + 1.5, 18.0, 14.5, 14.0, 4.0f, 0x20000000);
+                this.icons.drawStringWithShadow("a", x + 4, y + 6, -1);
+            }
+            if (category.getCategory() == Category.CONFIG) {
+                DrawUtil.drawOutlinedRoundedRect((double)x + 0.5, (double)y + 1.5, 18.0, 14.5, 14.0, 4.0f, 0x20000000);
+                this.icons.drawStringWithShadow("b", x + 4, y + 6, -1);
+            }
             float startX = x;
             float endX = startX + 120.0f;
             y += 18;
@@ -141,11 +166,12 @@ extends GuiScreen {
                     float startKeybindY = y;
                     float endKeybindY = y + 18;
                     DrawUtil.drawGradientSideways(startX - 2.0f, startKeybindY, endX + 2.0f, endKeybindY + 1.0f, ClientTheme.color1.getRGB(), ClientTheme.color2.getRGB());
-                    Gui.drawRect(startX - 1.0f, startKeybindY, endX + 1.0f, endKeybindY, this.moduleDisabledColor.getRGB());
+                    Gui.drawRect(startX - 1.0f, startKeybindY, endX + 1.0f, endKeybindY, new Color(38, 38, 38, 255).getRGB());
                     if (this.module.boxOnHover.isEnabled() && this.module.boxOnSettings.isEnabled() && (float)mouseX > startX + 1.0f && (float)mouseX < endX - 1.0f && (float)mouseY > startKeybindY && (float)mouseY < endKeybindY) {
                         Gui.drawRect(startX, startKeybindY, endX, endKeybindY, 0x30000000);
                     }
-                    frs.drawStringWithShadow(this.keyChangeModule == m ? "Waiting..." : "Keybind : " + Keyboard.getKeyName(m.getKey()), startX + 3.0f, startKeybindY + 5.5f, -1);
+                    frs.drawStringWithShadow(this.keyChangeModule == m ? "Waiting..." : "Keybind : " + Keyboard.getKeyName(m.getKey()), startX + 18.0f, startKeybindY + 6.0f, -1);
+                    this.icons.drawStringWithShadow("t", startX + 3.0f, startKeybindY + 6.0f, -1);
                     y += 18;
                     for (SettingHolder settingHolder : holder.getSettings()) {
                         String toRender;
@@ -187,9 +213,10 @@ extends GuiScreen {
                                 setting = (BooleanSetting)settingHolder.getSetting();
                                 Gui.drawRect(startX + 2.0f, startSettingY + 2.0f, startX + 6.0f, startSettingY + 18.0f - 4.0f, Integer.MIN_VALUE);
                                 frs.drawStringWithShadow(setting.getName(), startX + 10.0f, startSettingY + 5.0f, -1);
-                                Gui.drawRect(endX - 15.0f, startSettingY + 2.0f, endX - 14.0f + 11.0f, startSettingY + 3.0f + 11.0f, Integer.MIN_VALUE);
+                                DrawUtil.drawOutlinedRoundedRect(endX - 15.0f, startSettingY + 2.0f, 11.0, 11.0, 8.0, 1.0f, -1);
+                                DrawUtil.drawOutlinedRoundedRect(endX - 15.0f, startSettingY + 2.0f, 11.0, 11.0, 8.0, 1.0f, -1);
                                 if (((BooleanSetting)setting).isEnabled()) {
-                                    DrawUtil.drawGradientSideways(endX - 14.0f, startSettingY + 3.0f, endX - 14.0f + 10.0f, startSettingY + 3.0f + 10.0f, ClientTheme.color1.getRGB(), ClientTheme.color2.getRGB());
+                                    this.icons.drawStringWithShadow("o", endX - 15.0f, startSettingY + 5.0f, -1);
                                 }
                             } else if (settingHolder.getSetting() instanceof EnumModeSetting) {
                                 setting = (EnumModeSetting)settingHolder.getSetting();
@@ -207,6 +234,7 @@ extends GuiScreen {
                                 numberX = (((DoubleSetting)setting).getValue() - ((DoubleSetting)setting).getMin()) * (double)length / (((DoubleSetting)setting).getMax() - ((DoubleSetting)setting).getMin());
                                 Gui.drawRect(startSettingX, startSettingY + 12.0f, endSettingX, startSettingY + 14.0f, Integer.MIN_VALUE);
                                 DrawUtil.drawGradientSideways(startSettingX, startSettingY + 12.0f, (double)startSettingX + numberX, startSettingY + 14.0f, ClientTheme.color1.getRGB(), ClientTheme.color2.getRGB());
+                                DrawUtil.drawRoundedRect((double)startSettingX + numberX - 4.0, startSettingY + 11.0f, (double)startSettingX + numberX, startSettingY + 15.0f, 4.0, ClientTheme.color2.getRGB());
                                 frs.drawStringWithShadow(setting.getName() + " : " + ((DoubleSetting)setting).getStringValue(), startSettingX + 2.0f, startSettingY + 3.0f, -1);
                             } else if (settingHolder.getSetting() instanceof IntegerSetting) {
                                 setting = (IntegerSetting)settingHolder.getSetting();
@@ -222,6 +250,8 @@ extends GuiScreen {
                                 numberX = (float)(((IntegerSetting)setting).getValue() - ((IntegerSetting)setting).getMin()) * length / (float)(((IntegerSetting)setting).getMax() - ((IntegerSetting)setting).getMin());
                                 Gui.drawRect(startSettingX, startSettingY + 12.0f, endSettingX, startSettingY + 14.0f, Integer.MIN_VALUE);
                                 DrawUtil.drawGradientSideways(startSettingX, startSettingY + 12.0f, (double)startSettingX + numberX, startSettingY + 14.0f, ClientTheme.color1.getRGB(), ClientTheme.color2.getRGB());
+                                DrawUtil.drawRoundedRect((double)startSettingX + numberX - 4.0, startSettingY + 11.0f, (double)startSettingX + numberX, startSettingY + 15.0f, 4.0, ClientTheme.color2.getRGB());
+                                DrawUtil.drawRoundedRect((double)startSettingX + numberX - 4.0, startSettingY + 11.0f, (double)startSettingX + numberX, startSettingY + 15.0f, 4.0, ClientTheme.color2.getRGB());
                                 frs.drawStringWithShadow(setting.getName() + " : " + ((IntegerSetting)setting).getValue(), (double)(startSettingX + 2.0f), (double)startSettingY + 2.8, -1);
                             } else if (settingHolder.getSetting() instanceof CustomDoubleSetting) {
                                 CustomDoubleSetting doubleSetting = (CustomDoubleSetting)settingHolder.getSetting();
@@ -417,8 +447,8 @@ extends GuiScreen {
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
         int i = Integer.signum(Mouse.getEventDWheel());
-        this.scrollY -= i * 4;
-        this.scrollY = Math.max(-500, Math.min(500, this.scrollY));
+        this.targetScrollY -= (float)(i * 20);
+        this.targetScrollY = Math.max(-200.0f, Math.min(200.0f, this.targetScrollY));
     }
 
     @Override

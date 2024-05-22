@@ -40,7 +40,7 @@ public class PlayerControllerMP {
     private ItemStack currentItemHittingBlock;
     private float curBlockDamageMP;
     private float stepSoundTickCounter;
-    private int blockHitDelay;
+    public int blockHitDelay;
     private boolean isHittingBlock;
     private WorldSettings.GameType currentGameType = WorldSettings.GameType.SURVIVAL;
     public int currentPlayerItem;

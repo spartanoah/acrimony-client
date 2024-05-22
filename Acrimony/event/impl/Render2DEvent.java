@@ -39,5 +39,13 @@ extends Event {
     public void setHeight(int height) {
         this.height = height;
     }
+
+    public ScaledResolution getScaledResolution() {
+        return this.sr;
+    }
+
+    public float getPartialTicks() {
+        return this.partialTicks;
+    }
 }
 

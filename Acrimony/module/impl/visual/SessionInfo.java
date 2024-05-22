@@ -13,6 +13,7 @@ import Acrimony.module.Category;
 import Acrimony.module.HUDModule;
 import Acrimony.module.impl.visual.ClientTheme;
 import Acrimony.module.impl.visual.NameProtect;
+import Acrimony.setting.impl.BooleanSetting;
 import Acrimony.setting.impl.ModeSetting;
 import Acrimony.util.render.DrawUtil;
 import java.awt.Color;
@@ -28,6 +29,7 @@ public class SessionInfo
 extends HUDModule {
     private final ModeSetting mode = new ModeSetting("Mode", "Future", "Future", "Outline", "Blur");
     private Framebuffer stencilFramebuffer = new Framebuffer(1, 1, false);
+    private final BooleanSetting blurbg = new BooleanSetting("Blur Background", () -> this.mode.is("Future"), false);
     private AcrimonyFont sfpro;
     private AcrimonyFont sfprobold;
     private AcrimonyFont icons;
@@ -42,7 +44,7 @@ extends HUDModule {
 
     public SessionInfo() {
         super("SessionInfo", Category.VISUAL, 8.0, 160.0, 170, 58, AlignType.LEFT);
-        this.addSettings(this.mode);
+        this.addSettings(this.mode, this.blurbg);
         this.posX.setValue(this.width);
         this.posY.setValue(this.height);
     }
@@ -133,6 +135,7 @@ extends HUDModule {
             this.initialised = true;
         }
         ScaledResolution sr = new ScaledResolution(mc);
+        AcrimonyFont icon1 = Acrimony.instance.getFontManager().getIconregular();
         if (SessionInfo.mc.gameSettings.showDebugInfo) {
             return;
         }
@@ -142,14 +145,21 @@ extends HUDModule {
         long time = System.currentTimeMillis() - this.currentTime;
         switch (this.mode.getMode()) {
             case "Future": {
+                if (this.blurbg.isEnabled()) {
+                    Acrimony.instance.blurHandler.blur((double)x, (double)y, (double)this.width, (double)this.height, 0.0f);
+                }
                 DrawUtil.drawRoundedRect(x, y, x + this.width, y + this.height, 1.0, Integer.MIN_VALUE);
                 for (float i = (float)x; i < (float)(x + this.width); i += 1.0f) {
                     Gui.drawRect(i, y + 14, i + 1.0f, y + 15, this.theme.getColor((int)(i * 10.0f)));
                 }
-                this.sfprobold.drawStringWithShadow("Session Stats", x + 48, y + 4, -1);
-                this.sfpro.drawStringWithShadow("Session Time: " + this.getSessionLengthString(), x + 10, y + 20, -1);
-                this.sfpro.drawStringWithShadow("Username: " + username, x + 10, y + 32, -1);
-                this.sfpro.drawStringWithShadow("Kills: " + this.killAmount, x + 10, y + 46, -1);
+                icon1.drawStringWithShadow("b", (double)(x + 4), (double)y + 4.5, this.theme.getColor(1));
+                this.sfprobold.drawStringWithShadow("Session Stats", x + 20, y + 4, -1);
+                icon1.drawStringWithShadow("a", x + 4, y + 20, this.theme.getColor(1));
+                this.sfpro.drawStringWithShadow("Length: " + this.getSessionLengthString(), x + 20, y + 20, -1);
+                icon1.drawStringWithShadow("f", (double)(x + 4), (double)y + 32.5, this.theme.getColor(1));
+                this.sfpro.drawStringWithShadow("Username: " + username, x + 20, y + 32, -1);
+                icon1.drawStringWithShadow("c", x + 4, y + 46, this.theme.getColor(1));
+                this.sfpro.drawStringWithShadow("Kills: " + this.killAmount, x + 20, y + 46, -1);
                 break;
             }
             case "Outline": {

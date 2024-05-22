@@ -46,7 +46,7 @@ extends ConnectionHandler {
     private static short getStates(DoorData doorData) {
         short s = 0;
         if (doorData.isLower()) {
-            s = (short)(s | 1);
+            s = (short)(s | '\u0001');
         }
         if (doorData.isOpen()) {
             s = (short)(s | 2);

@@ -667,7 +667,7 @@ public abstract class ServerConfigurationManager {
 
     public void sendChatMsgImpl(IChatComponent component, boolean isChat) {
         this.mcServer.addChatMessage(component);
-        byte b0 = (byte)(isChat ? 1 : 0);
+        byte b0 = (byte)(isChat ? (char)'\u0001' : '\u0000');
         this.sendPacketToAllPlayers(new S02PacketChat(component, b0));
     }
 

@@ -74,7 +74,7 @@ implements IRangedAttackMob {
     }
 
     public void setAggressive(boolean aggressive) {
-        this.getDataWatcher().updateObject(21, (byte)(aggressive ? 1 : 0));
+        this.getDataWatcher().updateObject(21, (byte)(aggressive ? (char)'\u0001' : '\u0000'));
     }
 
     public boolean getAggressive() {

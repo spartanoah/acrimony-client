@@ -206,5 +206,15 @@ implements IMinecraft {
         }
         return speed;
     }
+
+    private double randomAmount() {
+        return 1.0E-4 + Math.random() * 0.001;
+    }
+
+    public static boolean isStrafing() {
+        boolean left = Keyboard.isKeyDown(MovementUtil.mc.gameSettings.keyBindLeft.getKeyCode());
+        boolean right = Keyboard.isKeyDown(MovementUtil.mc.gameSettings.keyBindRight.getKeyCode());
+        return left || right;
+    }
 }
 

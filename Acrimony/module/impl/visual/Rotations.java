@@ -25,6 +25,7 @@ extends Module {
         this.addSettings(this.smooth);
         this.listenType = EventListenType.MANUAL;
         this.setStateHidden(true);
+        this.setEnabledSilently(true);
         this.startListening();
     }
 

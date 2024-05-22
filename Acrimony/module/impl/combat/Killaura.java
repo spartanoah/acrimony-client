@@ -9,6 +9,7 @@ import Acrimony.event.impl.ItemRenderEvent;
 import Acrimony.event.impl.JumpEvent;
 import Acrimony.event.impl.MotionEvent;
 import Acrimony.event.impl.PostMotionEvent;
+import Acrimony.event.impl.Render3DEvent;
 import Acrimony.event.impl.RenderEvent;
 import Acrimony.event.impl.SlowdownEvent;
 import Acrimony.event.impl.StrafeEvent;
@@ -27,19 +28,24 @@ import Acrimony.setting.impl.BooleanSetting;
 import Acrimony.setting.impl.DoubleSetting;
 import Acrimony.setting.impl.IntegerSetting;
 import Acrimony.setting.impl.ModeSetting;
+import Acrimony.util.misc.DeltaTime;
 import Acrimony.util.misc.LogUtil;
 import Acrimony.util.misc.TimerUtil;
 import Acrimony.util.player.FixedRotations;
 import Acrimony.util.player.MovementUtil;
 import Acrimony.util.player.RotationsUtil;
+import Acrimony.util.render.RenderUtil;
 import com.viaversion.viarewind.protocol.protocol1_8to1_9.Protocol1_8To1_9;
 import com.viaversion.viarewind.utils.PacketUtil;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Type;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Comparator;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -54,10 +60,14 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import net.vialoadingbase.ViaLoadingBase;
 import net.viamcp.fixes.AttackOrder;
+import org.lwjgl.opengl.GL11;
 
 public class Killaura
 extends Module {
+    private double time;
+    public boolean down;
     private EntityLivingBase target;
     public final ModeSetting mode = new ModeSetting("Mode", "Single", "Single", "Switch", "Fast Switch");
     private final ModeSetting filter = new ModeSetting("Filter", "Range", "Range", "Health");
@@ -92,7 +102,7 @@ extends Module {
     private final BooleanSetting monsters = new BooleanSetting("Monsters", false);
     private final BooleanSetting invisibles = new BooleanSetting("Invisibles", false);
     private final BooleanSetting attackDead = new BooleanSetting("Attack dead", false);
-    public BooleanSetting visualiseTarget = new BooleanSetting("Visualise", true);
+    private final ModeSetting visualiseTarget = new ModeSetting("TargetESP", "BOX", "BOX", "Jello", "NONE");
     private boolean hadTarget;
     private ClientTheme theme;
     private FixedRotations fixedRotations;
@@ -140,7 +150,9 @@ extends Module {
             }
             this.stopTargeting();
         }
-        Acrimony.instance.getSlotSpoofHandler().stopSpoofing();
+        if (!Scaffold.isSpoofing) {
+            Acrimony.instance.getSlotSpoofHandler().stopSpoofing();
+        }
         Acrimony.instance.getPacketBlinkHandler().stopBlinking();
     }
 
@@ -278,7 +290,6 @@ extends Module {
             this.afterAttackAutoblock(attackTick);
         } else {
             this.releaseBlocking();
-            Acrimony.instance.getPacketBlinkHandler().releasePackets();
             this.autoblockTicks = 0;
         }
         Killaura.mc.gameSettings.keyBindAttack.pressed = false;
@@ -493,15 +504,12 @@ extends Module {
                 break;
             }
             case "Watchdog": {
-                if (this.autoblockTicks % 5 != 0) {
-                    Acrimony.instance.getPacketBlinkHandler().startBlinking();
-                } else {
-                    Acrimony.instance.getPacketBlinkHandler().stopBlinking();
+                if (ViaLoadingBase.getInstance().getTargetVersion().isNewerThanOrEqualTo(ProtocolVersion.v1_12_2)) {
+                    Acrimony.util.network.PacketUtil.sendPacketNoEvent(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 255, Killaura.mc.thePlayer.inventory.getCurrentItem(), 0.0f, 0.0f, 0.0f));
+                    PacketWrapper useItem = PacketWrapper.create(29, null, Via.getManager().getConnectionManager().getConnections().iterator().next());
+                    useItem.write(Type.VAR_INT, 1);
+                    PacketUtil.sendToServer(useItem, Protocol1_8To1_9.class, true, true);
                 }
-                Acrimony.util.network.PacketUtil.sendPacketNoEvent(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 255, Killaura.mc.thePlayer.inventory.getCurrentItem(), 0.0f, 0.0f, 0.0f));
-                PacketWrapper useItem = PacketWrapper.create(29, null, Via.getManager().getConnectionManager().getConnections().iterator().next());
-                useItem.write(Type.VAR_INT, 1);
-                PacketUtil.sendToServer(useItem, Protocol1_8To1_9.class, true, true);
                 blocking = true;
             }
         }
@@ -586,8 +594,9 @@ extends Module {
                     break;
                 }
                 case "Watchdog": {
+                    if (!ViaLoadingBase.getInstance().getTargetVersion().isNewerThanOrEqualTo(ProtocolVersion.v1_12_2)) break;
                     Killaura.mc.gameSettings.keyBindUseItem.pressed = false;
-                    mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+                    Acrimony.util.network.PacketUtil.sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
                     break;
                 }
                 case "Spoof2": {
@@ -794,6 +803,75 @@ extends Module {
         double targetY = yDiff > 0.0 ? y + eyeHeight : (-yDiff < (double)Killaura.mc.thePlayer.getEyeHeight() ? Killaura.mc.thePlayer.posY + (double)Killaura.mc.thePlayer.getEyeHeight() : y);
         Vec3 targetVec = new Vec3(x, targetY, z);
         return playerVec.distanceTo(targetVec) - (double)0.3f;
+    }
+
+    @Listener
+    public void onRender3D(Render3DEvent event) {
+        switch (this.visualiseTarget.getMode()) {
+            case "BOX": {
+                if (this.target == null) break;
+                double posX = this.target.lastTickPosX + (this.target.posX - this.target.lastTickPosX) * (double)event.getPartialTicks() - Killaura.mc.getRenderManager().renderPosX;
+                double posY = this.target.lastTickPosY + (this.target.posY - this.target.lastTickPosY) * (double)event.getPartialTicks() - Killaura.mc.getRenderManager().renderPosY;
+                double posZ = this.target.lastTickPosZ + (this.target.posZ - this.target.lastTickPosZ) * (double)event.getPartialTicks() - Killaura.mc.getRenderManager().renderPosZ;
+                RenderUtil.drawSoiledEntityESP(posX, posY, posZ, this.target.width / 1.2f, (double)this.target.height + 0.2, this.target.hurtTime > 0 ? new Color(255, 0, 0, 80).getRGB() : new Color(0, 197, 3, 30).getRGB());
+                break;
+            }
+            case "Jello": {
+                if (this.target == null || !this.hadTarget) break;
+                this.renderJello(this.target);
+            }
+        }
+    }
+
+    public void renderJello(EntityLivingBase e) {
+        int j;
+        this.time += 0.015 * ((double)DeltaTime.getDeltaTime() * 0.1);
+        double height = 0.5 * (1.0 + Math.sin(Math.PI * 2 * (this.time * 0.6)));
+        if (height > 0.995) {
+            this.down = true;
+        } else if (height < 0.01) {
+            this.down = false;
+        }
+        double x = e.posX + (e.posX - e.lastTickPosX) * (double)Killaura.mc.timer.renderPartialTicks - Killaura.mc.getRenderManager().renderPosX;
+        double y = e.posY + (e.posY - e.lastTickPosY) * (double)Killaura.mc.timer.renderPartialTicks - Killaura.mc.getRenderManager().renderPosY;
+        double z = e.posZ + (e.posZ - e.lastTickPosZ) * (double)Killaura.mc.timer.renderPartialTicks - Killaura.mc.getRenderManager().renderPosZ;
+        GlStateManager.enableBlend();
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(2848);
+        GlStateManager.disableDepth();
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableAlpha();
+        GL11.glLineWidth(2.0f);
+        GL11.glShadeModel(7425);
+        GL11.glDisable(2884);
+        double size = e.width;
+        double yOffset = ((double)e.height + 0.2) * height;
+        GL11.glBegin(5);
+        for (j = 0; j < 361; ++j) {
+            Killaura.glColor(new Color(255, 255, 255, 100), (int)(!this.down ? 255.0 * height : 255.0 * (1.0 - height)));
+            GL11.glVertex3d(x + Math.cos(Math.toRadians(j)) * size, y + yOffset, z - Math.sin(Math.toRadians(j)) * size);
+            Killaura.glColor(new Color(255, 255, 255, 10), (int)(!this.down ? 255.0 * height : 255.0 * (1.0 - height)));
+            GL11.glVertex3d(x + Math.cos(Math.toRadians(j)) * size, y + yOffset + (!this.down ? -0.5 * (1.0 - height) : 0.5 * height), z - Math.sin(Math.toRadians(j)) * size);
+        }
+        GL11.glEnd();
+        GL11.glBegin(2);
+        for (j = 0; j < 361; ++j) {
+            Killaura.glColor(new Color(255, 255, 255, 180), (int)(!this.down ? 255.0 * height : 255.0 * (1.0 - height)));
+            GL11.glVertex3d(x + Math.cos(Math.toRadians(j)) * size, y + yOffset, z - Math.sin(Math.toRadians(j)) * size);
+        }
+        GL11.glEnd();
+        GlStateManager.enableAlpha();
+        GL11.glShadeModel(7424);
+        GL11.glDisable(2848);
+        GL11.glEnable(2884);
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableDepth();
+        GlStateManager.disableBlend();
+        GlStateManager.resetColor();
+    }
+
+    public static void glColor(Color color, int i) {
+        GlStateManager.color((float)color.getRed() / 255.0f, (float)color.getGreen() / 255.0f, (float)color.getBlue() / 255.0f, (float)color.getAlpha() / 255.0f);
     }
 
     @Override

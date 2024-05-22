@@ -220,6 +220,8 @@ extends Module {
     private double spoofedX;
     private double spoofedY;
     private double spoofedZ;
+    private double oldY;
+    public static boolean isSpoofing;
     private float renderedYaw;
     private float renderedPitch;
 
@@ -234,6 +236,7 @@ extends Module {
     @Override
     public void onEnable() {
         this.placeY = Scaffold.mc.thePlayer.posY;
+        this.oldY = Scaffold.mc.thePlayer.posY;
         this.info = null;
         this.rotationVec3 = null;
         this.startedRotating = false;
@@ -277,6 +280,7 @@ extends Module {
         this.oldSlot = Scaffold.mc.thePlayer.inventory.currentItem;
         this.changedSlot = false;
         if (this.blockPicker.is("Spoof")) {
+            isSpoofing = true;
             Acrimony.instance.getSlotSpoofHandler().startSpoofing(Scaffold.mc.thePlayer.inventory.currentItem);
         }
         float yaw1 = MathHelper.wrapAngleTo180_float(Scaffold.mc.thePlayer.rotationYaw) + 720.0f;
@@ -407,6 +411,7 @@ extends Module {
     private void switchToOriginalSlot() {
         switch (this.blockPicker.getMode()) {
             case "Spoof": {
+                isSpoofing = false;
                 Acrimony.instance.getSlotSpoofHandler().stopSpoofing();
             }
             case "Switch": {
@@ -542,7 +547,7 @@ extends Module {
         this.rotationVec3 = null;
         ++this.ticks;
         float yaw = MovementUtil.getPlayerDirection() - 180.0f;
-        float pitch = (float)(this.info != null && this.overAir ? (double)this.getPitch(yaw) : (!this.hypixelSprint.is("None") && Scaffold.mc.thePlayer.onGround ? (this.ticks < 2 ? 58.0 - Math.random() : 80.0 + Math.random()) : (double)this.rotations.getPitch()));
+        float pitch = (float)(this.info != null && this.overAir ? (double)this.getPitch(yaw) : (!this.hypixelSprint.is("None") && Scaffold.mc.thePlayer.onGround ? (this.ticks < 2 ? 58.0 - Math.random() : 80.0 + Math.random()) : 80.0 + Math.random()));
         this.renderedYaw = yaw;
         if (this.info != null && this.overAir) {
             this.renderedPitch = pitch;
@@ -646,13 +651,14 @@ extends Module {
     }
 
     private void hypixelJumpScaffold() {
+        if (Scaffold.mc.thePlayer.onGround || KeyboardUtil.isPressed(Scaffold.mc.gameSettings.keyBindJump)) {
+            this.placeY = Scaffold.mc.thePlayer.posY;
+            this.oldY = this.placeY - 0.05;
+            Scaffold.mc.gameSettings.keyBindJump.pressed = true;
+        } else if (!KeyboardUtil.isPressed(Scaffold.mc.gameSettings.keyBindJump)) {
+            Scaffold.mc.gameSettings.keyBindJump.pressed = false;
+        }
         if (this.jumpSprintMode.is("Novoline")) {
-            if (Scaffold.mc.thePlayer.onGround || KeyboardUtil.isPressed(Scaffold.mc.gameSettings.keyBindJump)) {
-                this.placeY = Scaffold.mc.thePlayer.posY;
-                Scaffold.mc.gameSettings.keyBindJump.pressed = true;
-            } else if (!KeyboardUtil.isPressed(Scaffold.mc.gameSettings.keyBindJump)) {
-                Scaffold.mc.gameSettings.keyBindJump.pressed = false;
-            }
             BlockPos pos = new BlockPos(Scaffold.mc.thePlayer.posX, this.placeY - 1.0, Scaffold.mc.thePlayer.posZ);
             this.info = WorldUtil.getBlockInfo(pos, 3);
             this.overAir = WorldUtil.isAirOrLiquid(pos);
@@ -674,12 +680,6 @@ extends Module {
             Scaffold.mc.gameSettings.keyBindUseItem.pressed = false;
             Scaffold.mc.objectMouseOver = null;
         } else if (this.jumpSprintMode.is("Rise/Opal")) {
-            if (Scaffold.mc.thePlayer.onGround || KeyboardUtil.isPressed(Scaffold.mc.gameSettings.keyBindJump)) {
-                this.placeY = Scaffold.mc.thePlayer.posY;
-                Scaffold.mc.gameSettings.keyBindJump.pressed = true;
-            } else if (!KeyboardUtil.isPressed(Scaffold.mc.gameSettings.keyBindJump)) {
-                Scaffold.mc.gameSettings.keyBindJump.pressed = false;
-            }
             BlockPos pos = new BlockPos(Scaffold.mc.thePlayer.posX, this.placeY - 1.0, Scaffold.mc.thePlayer.posZ);
             this.info = WorldUtil.getBlockInfo(pos, 3);
             this.overAir = WorldUtil.isAirOrLiquid(pos);
@@ -687,26 +687,23 @@ extends Module {
                 Scaffold.mc.thePlayer.motionZ = 0.0;
                 Scaffold.mc.thePlayer.motionX *= 0.0;
             }
-            if (this.sprintTicks >= 2) {
+            if (this.sprintTicks >= 1) {
                 this.jumpTick = true;
             }
+            if (Scaffold.mc.thePlayer.motionY + Scaffold.mc.thePlayer.posY < this.placeY + 2.0 && Scaffold.mc.thePlayer.motionY < -0.15 && this.jumpTick) {
+                pos = new BlockPos(Scaffold.mc.thePlayer.posX - Scaffold.mc.thePlayer.motionX, this.placeY, Scaffold.mc.thePlayer.posZ - Scaffold.mc.thePlayer.motionZ);
+            } else if (!this.jumpTick) {
+                this.placeY = this.oldY;
+            }
             if (this.jumpTick) {
-                if (this.offGroundTicks == 5) {
-                    pos = new BlockPos(Scaffold.mc.thePlayer.posX, this.placeY, Scaffold.mc.thePlayer.posZ);
-                }
-                if (this.offGroundTicks == 8) {
-                    MovementUtil.incrementMoveDirection(0.2f, 0.0f);
-                } else {
-                    MovementUtil.incrementMoveDirection(1.2f, 0.0f);
-                }
                 this.info = WorldUtil.getBlockInfo(pos, 3);
                 this.overAir = WorldUtil.isAirOrLiquid(pos);
                 this.placing = true;
             }
-            if (this.info != null) {
+            if (this.info != null && this.jumpTick) {
                 Vec3 vec3 = WorldUtil.getVec3ClosestFromRots(this.info.pos, this.info.facing, true, this.rotations.getYaw(), this.rotations.getPitch());
                 float[] rots = RotationsUtil.getRotationsToPosition(vec3.xCoord, vec3.yCoord, vec3.zCoord);
-                this.rotations.updateRotations(rots[0], rots[1]);
+                this.rotations.updateRotations(Scaffold.mc.thePlayer.rotationYaw + 180.0f, rots[1]);
                 this.placeBlock(vec3);
                 this.placing = true;
             } else {
@@ -1627,49 +1624,43 @@ extends Module {
                             this.pendingMovementStop = false;
                         }
                         if (!this.towering) {
-                            event.setX(event.getX() * (double)0.95f);
-                            event.setZ(event.getZ() * (double)0.95f);
+                            event.setX(event.getX() * (double)0.96f);
+                            event.setZ(event.getZ() * (double)0.96f);
                         }
                         this.wasTowering = this.towering;
                         ++this.toweringTicks;
                     }
                 }
-                boolean airUnder = WorldUtil.negativeExpand(0.299);
+                boolean airUnder = WorldUtil.negativeExpand(0.279);
                 if (!allowTower) break;
                 switch (this.hypixelTower.getMode()) {
                     case "Faster vertically": {
-                        double towerSpeed;
+                        if (this.towering != this.wasTowering) {
+                            if (!this.towering && this.toweringTicks > 4) {
+                                this.pendingMovementStop = true;
+                            }
+                            if (!this.towering) {
+                                MovementUtil.strafe(event, 0.0);
+                            }
+                            this.toweringTicks = 0;
+                        }
                         if (!MovementUtil.isMoving() || !(MovementUtil.getHorizontalMotion() > 0.1) || Scaffold.mc.thePlayer.isPotionActive(Potion.jump)) break;
-                        double d = towerSpeed = MovementUtil.isGoingDiagonally(0.1) ? this.towerSpeedWhenDiagonal.getValue() : this.towerSpeed.getValue();
-                        if (Scaffold.mc.thePlayer.onGround) {
-                            boolean bl = this.towering = Scaffold.mc.gameSettings.keyBindJump.pressed && !airUnder;
-                            if (this.towering) {
-                                this.towerTicks = 0;
-                                Scaffold.mc.thePlayer.jumpTicks = 0;
-                                if (event.getY() > 0.0) {
-                                    Scaffold.mc.thePlayer.motionY = 0.41985f;
-                                    event.setY(0.41985f);
-                                    MovementUtil.strafe(event, towerSpeed - this.randomAmount());
-                                }
-                            }
-                        } else if (this.towering) {
-                            if (this.towerTicks == 2) {
-                                event.setY(Math.floor(Scaffold.mc.thePlayer.posY + 1.0) - Scaffold.mc.thePlayer.posY);
-                            } else if (this.towerTicks == 3) {
-                                if (Scaffold.mc.gameSettings.keyBindJump.pressed && !airUnder) {
-                                    Scaffold.mc.thePlayer.motionY = 0.41985f;
-                                    event.setY(0.41985f);
-                                    MovementUtil.strafe(event, towerSpeed - this.randomAmount());
-                                    this.towerTicks = 0;
-                                } else {
-                                    this.towering = false;
-                                }
-                            }
-                        }
+                        double towerSpeed = MovementUtil.isGoingDiagonally(0.1) ? this.towerSpeedWhenDiagonal.getValue() : this.towerSpeed.getValue();
+                        this.towering = Scaffold.mc.gameSettings.keyBindJump.isKeyDown();
                         if (this.towering) {
-                            // empty if block
+                            MovementUtil.strafe(event, towerSpeed - this.randomAmount());
+                            Scaffold.mc.thePlayer.jumpTicks = 0;
+                            if (this.toweringTicks == 1 && airUnder) {
+                                Scaffold.mc.thePlayer.motionY -= 0.02;
+                            } else if (this.toweringTicks == 4 && !airUnder) {
+                                Scaffold.mc.thePlayer.motionY -= 0.33;
+                            } else if (this.toweringTicks == 8) {
+                                this.toweringTicks = 0;
+                            }
+                            ++this.towerTicks;
+                            break;
                         }
-                        ++this.towerTicks;
+                        this.toweringTicks = 0;
                         break;
                     }
                     case "Faster horizontally": {
@@ -2247,7 +2238,7 @@ extends Module {
     public void onRender3D(Render3DEvent event) {
         ArrayList<PlacedBlock> toRemove = new ArrayList<PlacedBlock>();
         for (PlacedBlock block : this.blockPlaceList) {
-            float alpha = Math.max(1.0f - (float)block.timer.getTimeElapsed() / 1200.0f, 0.01f);
+            float alpha = Math.max(1.0f - (float)block.timer.getTimeElapsed() / 500.0f, 0.01f);
             if (alpha <= 0.01f) {
                 toRemove.add(block);
             }
@@ -2255,7 +2246,7 @@ extends Module {
             float r = (float)finalColor.getRed() / 255.0f;
             float g = (float)finalColor.getGreen() / 255.0f;
             float b = (float)finalColor.getBlue() / 255.0f;
-            RenderUtil.prepareBoxRender(2.5f, r, g, b, alpha);
+            RenderUtil.prepareBoxRender(5.5f, r, g, b, alpha);
             RenderUtil.renderBlockBox(mc.getRenderManager(), event.getPartialTicks(), block.pos.getX(), block.pos.getY(), block.pos.getZ());
             RenderUtil.stopBoxRender();
         }

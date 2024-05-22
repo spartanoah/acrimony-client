@@ -40,7 +40,7 @@ implements Packet<INetHandlerPlayServer> {
         buf.writeFloat(this.forwardSpeed);
         byte b0 = 0;
         if (this.jumping) {
-            b0 = (byte)(b0 | 1);
+            b0 = (byte)(b0 | '\u0001');
         }
         if (this.sneaking) {
             b0 = (byte)(b0 | 2);

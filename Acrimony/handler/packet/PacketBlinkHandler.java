@@ -25,6 +25,9 @@ implements IMinecraft {
 
     @Listener
     public void onSend(PacketSendEvent event) {
+        if (mc.isSingleplayer()) {
+            return;
+        }
         if (PacketBlinkHandler.mc.thePlayer == null || PacketBlinkHandler.mc.thePlayer.ticksExisted < 5) {
             if (!this.clearedPackets) {
                 this.packetsQueue.clear();

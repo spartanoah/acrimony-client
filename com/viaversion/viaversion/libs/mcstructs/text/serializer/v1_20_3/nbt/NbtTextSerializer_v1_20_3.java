@@ -120,7 +120,7 @@ implements ITypedSerializer<Tag, ATextComponent> {
 
     private Tag convert(Object object) {
         if (object instanceof Boolean) {
-            return new ByteTag((byte)((Boolean)object != false ? 1 : 0));
+            return new ByteTag((byte)((Boolean)object != false ? (char)'\u0001' : '\u0000'));
         }
         if (object instanceof Byte) {
             return new ByteTag((Byte)object);
